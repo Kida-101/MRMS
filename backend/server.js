@@ -21,9 +21,6 @@ app.use(cookieParser());
 app.use(cors({ origin: allowedOrigins, credentials: true }));
 
 // ROUTES
-app.use('/api', adminRouter);
-app.use('/api/auth', authRouter);
-app.use('/api', uploadRouter);
 
 app.get('/', (req, res) => {
   res.send(`<h1>Hello World!</h1>`);
@@ -36,5 +33,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(port, () => {
-  console.log(`Clinic backend is running on ${port}`);
+  console.log(`Server is running on ${port}`);
 });
