@@ -5,6 +5,8 @@ import cors from 'cors';
 import connectDB from './config/mongodb.js';
 
 // Routes
+import authRouter from './routes/auth.route.js';
+import adminRouter from './routes/admin.route.js';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -21,6 +23,8 @@ app.use(cookieParser());
 app.use(cors({ origin: allowedOrigins, credentials: true }));
 
 // ROUTES
+app.use('/api/auth', authRouter);
+app.use('/api/', adminRouter);
 
 app.get('/', (req, res) => {
   res.send(`<h1>Hello World!</h1>`);
