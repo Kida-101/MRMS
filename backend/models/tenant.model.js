@@ -59,7 +59,7 @@ const TenantSchema = new Schema(
     },
 
     leaseId: { type: Schema.Types.ObjectId, ref: 'Lease' },
-    leasedRooms: [{ type: Schema.Types.ObjectId, ref: 'Room' }],
+    roomId: [{ type: Schema.Types.ObjectId, ref: 'Room' }],
   },
   { timestamps: true }
 );
