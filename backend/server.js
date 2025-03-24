@@ -8,6 +8,7 @@ import connectDB from './config/mongodb.js';
 import authRouter from './routes/auth.route.js';
 import adminRouter from './routes/admin.route.js';
 import tenantRouter from './routes/tenant.route.js';
+import roomRouter from './routes/room.route.js';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -27,6 +28,7 @@ app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use('/api/auth', authRouter);
 app.use('/api/', adminRouter);
 app.use('/api/', tenantRouter);
+app.use('/api/', roomRouter);
 
 app.get('/', (req, res) => {
   res.send(`<h1>Hello World!</h1>`);
