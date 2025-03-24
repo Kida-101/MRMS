@@ -9,6 +9,7 @@ import authRouter from './routes/auth.route.js';
 import adminRouter from './routes/admin.route.js';
 import tenantRouter from './routes/tenant.route.js';
 import roomRouter from './routes/room.route.js';
+import leaseRouter from './routes/lease.route.js';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -29,6 +30,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/', adminRouter);
 app.use('/api/', tenantRouter);
 app.use('/api/', roomRouter);
+app.use('/api/', leaseRouter);
 
 app.get('/', (req, res) => {
   res.send(`<h1>Hello World!</h1>`);
