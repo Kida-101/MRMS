@@ -1,9 +1,9 @@
-import Signin from "@/components/auth/Signin";
+import SigninForm from "@/components/auth/SigninForm";
 
 const page = () => {
   return (
     <>
-      <Signin />
+      <SigninForm />
       <div className="">image</div>
     </>
   );

@@ -1,8 +1,9 @@
-import React from "react";
+"use client";
+
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
-const Signin = () => {
+const SigninForm = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center bg-gray-100">
       <div className="bg-white rounded-2xl shadow-xl p-8 space-y-6 w-100">
@@ -15,20 +16,13 @@ const Signin = () => {
             <label htmlFor="email" className="text-sm font-semibold">
               Email
             </label>
-            <Input
-              type="email"
-              name=""
-              id="email"
-              placeholder="Enter email"
-              required
-            />
+            <Input type="email" id="email" placeholder="Enter email" required />
           </div>
           <div className="space-y-2">
             <label htmlFor="password" className="text-sm font-semibold">
               Password
             </label>
             <Input
-              name=""
               id="password"
               type="password"
               required
@@ -52,4 +46,4 @@ const Signin = () => {
   );
 };
 
-export default Signin;
+export default SigninForm;
