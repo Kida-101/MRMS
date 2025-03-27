@@ -1,8 +1,12 @@
+import AuthGuard from '@/components/auth/AuthGuard';
+
 const Layout = ({ children }) => {
 
   return (
     <>
-      {children}
+      <AuthGuard>
+        {children}
+      </AuthGuard>
     </>
   );
 }

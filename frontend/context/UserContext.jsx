@@ -47,7 +47,8 @@ const UserProvider = ({ children }) => {
     isLoggedIn,
     setIsLoggedIn,
     getAuthState,
-    getUserData
+    getUserData,
+    backendUrl
   }
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
