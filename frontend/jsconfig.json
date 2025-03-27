@@ -22,6 +22,18 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/layout.jsx", "app/auth/layout.jsx", "app/auth/signin/page.jsx", "components/auth/Admin_registration.jsx", "components/auth/SigninForm.jsx", "app/page.jsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "app/layout.jsx",
+    "app/auth/layout.jsx",
+    "app/auth/signin/page.jsx",
+    "components/auth/Admin_registration.jsx",
+    "components/auth/SigninForm.jsx",
+    "app/page.jsx",
+    "app/dashboard/tenants/page.jsx"
+  ],
   "exclude": ["node_modules"]
 }
