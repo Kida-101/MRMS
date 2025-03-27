@@ -1,9 +1,44 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import useUser from "../../hooks/useUser";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import toast from "react-hot-toast";
+
 
 const SigninForm = () => {
+  const router = useRouter();
+
+  const { backendUrl } = useUser();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "email") setEmail(value);
+    if (name === "password") setPassword(value);
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const { data } = await axios.post(`${backendUrl}/api/auth/login`, { email, password }, { withCredentials: true });
+      if (data.success) {
+        toast.success("Login successful");
+        router.push("/dashboard");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center bg-gray-100">
       <div className="bg-white rounded-2xl shadow-xl p-8 space-y-6 w-100">
@@ -11,21 +46,32 @@ const SigninForm = () => {
           <div>Logo section</div>
           <h1 className="font-bold tracking-tight">Sign In</h1>
         </div>
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-semibold">
               Email
             </label>
-            <Input type="email" id="email" placeholder="Enter email" required />
+            <Input
+              value={email}
+              name="email"
+              onChange={handleChange}
+              type="email"
+              id="email"
+              placeholder="Enter email"
+              // required
+            />
           </div>
           <div className="space-y-2">
             <label htmlFor="password" className="text-sm font-semibold">
               Password
             </label>
             <Input
+              value={password}
+              name="password"
+              onChange={handleChange}
               id="password"
               type="password"
-              required
+              // required
               placeholder="Enter password"
             />
           </div>
