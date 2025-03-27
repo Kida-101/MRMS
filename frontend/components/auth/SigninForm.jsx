@@ -30,7 +30,7 @@ const SigninForm = () => {
       const { data } = await axios.post(`${backendUrl}/api/auth/login`, { email, password }, { withCredentials: true });
       if (data.success) {
         toast.success("Login successful");
-        router.push("/dashboard");
+        router.replace("/dashboard");
       } else {
         toast.error(data.message);
       }
