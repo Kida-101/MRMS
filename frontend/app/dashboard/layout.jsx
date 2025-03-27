@@ -1,10 +1,16 @@
-const Layout = ({ children }) => {
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "../../components/dashboard/layout/AppSidebar";
 
+const Layout = ({ children }) => {
   return (
     <>
-      {children}
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarTrigger />
+        {children}
+      </SidebarProvider>
     </>
   );
-}
+};
 
 export default Layout;
