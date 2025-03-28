@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
 
-
 const SigninForm = () => {
   const router = useRouter();
 
@@ -16,18 +15,24 @@ const SigninForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  console.log(backendUrl);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     if (name === "email") setEmail(value);
     if (name === "password") setPassword(value);
-  }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const { data } = await axios.post(`${backendUrl}/api/auth/login`, { email, password }, { withCredentials: true });
+      const { data } = await axios.post(
+        `${backendUrl}/api/auth/login`,
+        { email, password },
+        { withCredentials: true }
+      );
       if (data.success) {
         toast.success("Login successful");
         router.replace("/dashboard");
@@ -37,7 +42,7 @@ const SigninForm = () => {
     } catch (error) {
       toast.error(error.message);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center bg-gray-100">

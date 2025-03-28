@@ -1,5 +1,5 @@
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "../../components/dashboard/layout/AppSidebar";
+import { SidebarProvider, SidebarTrigger } from "../../components/ui/sidebar";
 
 const Layout = ({ children }) => {
   return (

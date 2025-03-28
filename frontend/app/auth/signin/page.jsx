@@ -1,5 +1,5 @@
-import SigninForm from "@/components/auth/SigninForm";
-import GuestGuard from "@/components/auth/GuestGuard";
+import SigninForm from "/components/auth/SigninForm";
+import GuestGuard from "/components/auth/GuestGuard";
 
 const page = () => {
   return (
