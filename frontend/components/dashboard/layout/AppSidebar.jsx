@@ -7,13 +7,14 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
+} from "/components/ui/sidebar";
 import Link from "next/link";
+import { SidebarFooter, SidebarTrigger } from "../../ui/sidebar";
 
 const items = [
   {
     title: "Dashboard",
-    url: "/",
+    url: "/dashboard",
     icon: Home,
   },
   {
@@ -40,16 +41,15 @@ const items = [
 
 export function AppSidebar() {
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarContent>
-        <div></div>
         <SidebarGroup>
           <SidebarMenu>
             {items.map((item) => (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild>
+                <SidebarMenuButton asChild size="lg" tooltip={item.title}>
                   <Link href={item.url}>
-                    <item.icon size={54} />
+                    <item.icon />
                     <span className="text-lg">{item.title}</span>
                   </Link>
                 </SidebarMenuButton>
