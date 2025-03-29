@@ -1,3 +1,5 @@
+"use client";
+
 import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
 import {
   Sidebar,
@@ -10,6 +12,7 @@ import {
 } from "/components/ui/sidebar";
 import Link from "next/link";
 import { SidebarFooter, SidebarTrigger } from "../../ui/sidebar";
+import { usePathname } from "next/navigation";
 
 const items = [
   {
@@ -40,6 +43,8 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const pathname = usePathname();
+
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
@@ -47,7 +52,12 @@ export function AppSidebar() {
           <SidebarMenu>
             {items.map((item) => (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild size="lg" tooltip={item.title}>
+                <SidebarMenuButton
+                  asChild
+                  size="lg"
+                  tooltip={item.title}
+                  isActive={item.url === pathname}
+                >
                   <Link href={item.url}>
                     <item.icon />
                     <span className="text-lg">{item.title}</span>
