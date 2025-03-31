@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
 import axios from "axios";
 import { createContext, useEffect, useState } from "react";
-import { toast } from "react-hot-toast"
+import { toast } from "react-hot-toast";
 
 export const UserContext = createContext(null);
 
@@ -15,7 +15,9 @@ const UserProvider = ({ children }) => {
 
   const getAuthState = async () => {
     try {
-      const { data } = await axios.get(`${backendUrl}/api/auth/is-auth`, { withCredentials: true });
+      const { data } = await axios.get(`${backendUrl}/api/auth/is-auth`, {
+        withCredentials: true,
+      });
       if (data.success) {
         setIsLoggedIn(true);
         await getUserData();
@@ -25,20 +27,22 @@ const UserProvider = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   const getUserData = async () => {
     try {
-      const { data } = await axios.get(`${backendUrl}/api/admin`, { withCredentials: true });
+      const { data } = await axios.get(`${backendUrl}/api/admin`, {
+        withCredentials: true,
+      });
       data.success ? setUser(data.data) : toast.error(data.message);
     } catch (error) {
       toast.error(error.message);
     }
-  }
+  };
 
   useEffect(() => {
     getAuthState();
-  }, [])
+  }, []);
 
   const value = {
     isLoading,
@@ -48,10 +52,15 @@ const UserProvider = ({ children }) => {
     setIsLoggedIn,
     getAuthState,
     getUserData,
+<<<<<<< HEAD
     backendUrl
   }
+=======
+    backendUrl,
+  };
+>>>>>>> 13ca914eb93f2b7546f3ba2ee25139abe982b14d
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
-}
+};
 
 export default UserProvider;
