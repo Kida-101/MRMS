@@ -31,11 +31,6 @@ const RoomSchema = new Schema(
     },
     description: String,
     floorPlan: String,
-
-    leaseId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Lease'
-    }
   },
   { timestamps: true }
 );

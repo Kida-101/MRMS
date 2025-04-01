@@ -57,9 +57,11 @@ const TenantSchema = new Schema(
         validate: [validateEmail, 'Please provide a valid email address'],
       },
     },
-
-    leaseId: { type: Schema.Types.ObjectId, ref: 'Lease' },
-    roomId: [{ type: Schema.Types.ObjectId, ref: 'Room' }],
+    status: {
+      type: String,
+      enum: ['active', 'inactive'],
+      default: 'active',
+    }
   },
   { timestamps: true }
 );
