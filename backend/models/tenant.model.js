@@ -31,7 +31,7 @@ const TenantSchema = new Schema(
       name: { type: String, required: true },
       relationship: {
         type: String,
-        enum: ['parent', 'spouse', 'sibling', 'friend', 'other'],
+        enum: ['parent', 'spouse', 'sibling', 'friend','colleague', 'other'],
         required: true,
       },
       phone: { type: String, required: true },
@@ -43,11 +43,11 @@ const TenantSchema = new Schema(
       },
     },
 
-    businessDetails: {
+    businessInfo: {
       businessName: { type: String, required: true },
       businessType: {
         type: String,
-        enum: ['retail', 'food', 'services', 'office', 'other'],
+        enum: ['retail', 'food', 'services', 'office', 'commercial', 'other'],
         required: true,
       },
       businessPhone: { type: String, required: true },

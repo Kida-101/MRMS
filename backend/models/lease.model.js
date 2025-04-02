@@ -28,7 +28,7 @@ const LeaseSchema = new Schema(
     },
     paymentSchedule: {
       type: String,
-      enum: ['monthly', 'quarterly', 'annually'],
+      enum: ['monthly', 'quarterly', 'biannually', 'annually', 'other'],
       default: 'monthly'
     },
     status: {
@@ -41,7 +41,7 @@ const LeaseSchema = new Schema(
       url: String
     }]
   },
-  { 
+  {
     timestamps: true,
   }
 );
