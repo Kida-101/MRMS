@@ -3,13 +3,14 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import useUser from "../../hooks/useUser";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
+import useUser from "../../hooks/useUser";
 
 const SigninForm = () => {
   const router = useRouter();
+  const { setIsLoggedIn, getUserData } = useUser();
 
   const { backendUrl } = useUser();
   const [email, setEmail] = useState("");
@@ -35,6 +36,8 @@ const SigninForm = () => {
       );
       if (data.success) {
         toast.success("Login successful");
+        setIsLoggedIn(true);
+        getUserData();
         router.replace("/dashboard");
       } else {
         toast.error(data.message);
@@ -63,7 +66,7 @@ const SigninForm = () => {
               type="email"
               id="email"
               placeholder="Enter email"
-              // required
+            // required
             />
           </div>
           <div className="space-y-2">
