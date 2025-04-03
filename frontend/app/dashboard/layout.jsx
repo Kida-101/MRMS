@@ -1,7 +1,7 @@
 import AuthGuard from "@/components/auth/AuthGuard";
 import { AppSidebar } from "../../components/dashboard/layout/AppSidebar";
-import { Separator } from "../../components/ui/separator";
-import { SidebarProvider, SidebarTrigger } from "../../components/ui/sidebar";
+import { SidebarProvider } from "../../components/ui/sidebar";
+import Header from "../../components/dashboard/layout/Header";
 
 const Layout = ({ children }) => {
   return (
@@ -9,8 +9,10 @@ const Layout = ({ children }) => {
       <AuthGuard>
         <SidebarProvider>
           <AppSidebar />
-          <SidebarTrigger />
-          {children}
+          <main className="w-full flex flex-col gap-4">
+            <Header />
+            <div className="px-4">{children}</div>
+          </main>
         </SidebarProvider>
       </AuthGuard>
     </>
