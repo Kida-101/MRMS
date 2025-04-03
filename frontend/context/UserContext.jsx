@@ -52,14 +52,9 @@ const UserProvider = ({ children }) => {
     setIsLoggedIn,
     getAuthState,
     getUserData,
-<<<<<<< HEAD
-    backendUrl
-  }
-=======
+
     backendUrl,
   };
->>>>>>> 13ca914eb93f2b7546f3ba2ee25139abe982b14d
-
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
 
