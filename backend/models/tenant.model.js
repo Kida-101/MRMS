@@ -61,7 +61,11 @@ const TenantSchema = new Schema(
       type: String,
       enum: ['active', 'inactive'],
       default: 'active',
-    }
+    },
+    leaseId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Lease',
+    },
   },
   { timestamps: true }
 );

@@ -36,10 +36,9 @@ const LeaseSchema = new Schema(
       enum: ['active', 'expired', 'terminated', 'renewed'],
       default: 'active'
     },
-    documents: [{
-      name: String,
-      url: String
-    }]
+    documents: {
+      type: [String],
+    },
   },
   {
     timestamps: true,
