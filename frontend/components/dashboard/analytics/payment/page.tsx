@@ -19,9 +19,9 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 const chartData = [
-    { browser: "overdue", visitors: 200, fill: "var(--color-overdue)"},
-    { browser: "completed", visitors: 275, fill: "var(--color-completed)" }, // Green
-    { browser: "pending", visitors: 200, fill: "var(--color-pending)" }, // Yellow // Red
+    { browser: "overdue", visitors: 200 /*get from backend*/, fill: "var(--color-overdue)"},
+    { browser: "completed", visitors: 275/*get from backend*/, fill: "var(--color-completed)" }, // Green
+    { browser: "pending", visitors: 200/*get from backend*/, fill: "var(--color-pending)" }, // Yellow // Red
 ]
 
 const chartConfig = {
@@ -51,7 +51,7 @@ export default function PendingPayment() {
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
         <CardTitle>Payment Information</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardDescription>January - June 2024</CardDescription>{/* get data from the backend */}
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
@@ -119,10 +119,10 @@ export default function PendingPayment() {
         </div>
     </div>
         <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />{/* get data from the backend */}
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
+          Showing total visitors for the last 6 months {/* get data from the backend */}
         </div>
       </CardFooter>
     </Card>
