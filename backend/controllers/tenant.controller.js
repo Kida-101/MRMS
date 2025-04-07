@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import Tenant from '../models/tenant.model.js';
 import Lease from '../models/lease.model.js';
@@ -18,63 +19,105 @@ export const getTenants = async (req, res) => {
 
 // CREATE TENANT
 export const createTenant = async (req, res) => {
-  const data = req.body
-  const {
-    emergencyContact,
-    businessInfo,
-    status,
-    personalInfo
-  } = data;
-  const { leaseInfo } = data;
+  try {
+    const { body } = req;
 
-  const tenantData = {
-    emergencyContact,
-    businessInfo,
-    status,
-    ...personalInfo,
-  };
+    // Validate Required Fields
+    const requiredFields = ['emergencyContact', 'businessInfo', 'personalInfo', 'leaseInfo'];
+    const missingFields = requiredFields.filter(field => !body[field]);
+    if (missingFields.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Missing required fields: ${missingFields.join(', ')}`
+      });
+    }
 
-  if (!leaseInfo.roomId) {
-    return res.status(400).json({ success: false, message: 'Room number is not selected' });
+    // Destructure Data
+    const {
+      emergencyContact,
+      businessInfo,
+      personalInfo: { email, password, ...personalInfo },
+      leaseInfo: { roomId, ...leaseInfo }
+    } = body;
+
+    // Check Room Availability
+    const existingRoom = await Room.findById(roomId);
+    if (!existingRoom || existingRoom.status !== 'vacant') {
+      return res.status(400).json({
+        success: false,
+        message: 'Room is not available'
+      });
+    }
+
+    // Check Existing Tenant
+    const existingTenant = await Tenant.findOne({ email });
+    if (existingTenant) {
+      return res.status(409).json({
+        success: false,
+        message: 'Tenant already exists'
+      });
+    }
+
+    // Create Tenant
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const tenant = await Tenant.create({
+      emergencyContact,
+      businessInfo,
+      ...personalInfo,
+      email,
+      password: hashedPassword
+    });
+
+    if (!tenant) {
+      return res.status(400).json({ success: false, message: "Failed to create a tenant!" })
+    }
+
+    // Create Lease
+    const lease = await Lease.create({
+      ...leaseInfo,
+      tenantId: tenant._id,
+      roomId
+    });
+
+    if (!lease) {
+      await Tenant.findByIdAndDelete(tenant._id);
+      return res.status(400).json({ success: false, message: "Failed to create a lease!" })
+    }
+
+    // Update Room Status
+    const updatedRoom = await Room.findByIdAndUpdate(roomId, {
+      status: 'occupied',
+      // $push: { leaseHistory: lease._id }
+    });
+
+    if (updatedRoom.status !== 'occupied') {
+      await Lease.findByIdAndDelete(lease._id);
+      await Tenant.findByIdAndDelete(tenant._id);
+      return res.status(400).json({ success: false, message: "Failed to update room status!" })
+    }
+
+    // Link Lease to Tenant
+    const updatedTenant = await Tenant.findByIdAndUpdate(
+      tenant._id,
+      { $set: { leaseId: lease._id } },
+      { new: true }
+    ).populate({
+      path: "leaseId",
+      populate: {
+        path: "roomId",
+        model: "Room",
+      }
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: 'Tenant created successfully',
+      data: updatedTenant
+    });
+
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
-
-  const existingTenant = await Tenant.findOne({ email: tenantData.email });
-
-  if (existingTenant) {
-    return res.status(400).json({ success: false, message: 'Tenant already exists' });
-  }
-
-  const hashedPassword = await bcrypt.hash(tenantData.password, 10);
-  tenantData.password = hashedPassword;
-
-  const tenantDoc = await Tenant.create(tenantData);
-
-  if (!tenantDoc) {
-    return res.status(400).json({ success: false, message: 'Failed to create tenant' });
-  }
-
-  leaseInfo.tenantId = tenantDoc._id;
-
-  const leaseDoc = await Lease.create(leaseInfo);
-  if (!leaseDoc) {
-    await Tenant.findByIdAndDelete(tenantDoc._id);
-    return res.status(400).json({ success: false, message: 'Failed to create lease' });
-  }
-
-  const roomDoc = await Room.findByIdAndUpdate(leaseInfo.roomId, { status: 'occupied' }, { new: true });
-  if (!roomDoc) {
-    await Lease.findByIdAndDelete(leaseDoc._id);
-    return res.status(400).json({ success: false, message: 'Failed to update room status' });
-  }
-
-  const updatedTenantDoc = await Tenant.findByIdAndUpdate(tenantDoc._id, { leaseId: leaseDoc._id }, { new: true });
-  if (!updatedTenantDoc) {
-    await Room.findByIdAndUpdate(leaseDoc.roomId, { status: 'vacant' }, { new: true });
-    await Lease.findByIdAndDelete(leaseDoc._id);
-    return res.status(400).json({ success: false, message: 'Failed to update tenant with lease' });
-  }
-
-  res.status(201).json({ success: true, message: "Tenant created successfully", data: tenantDoc });
 };
 
 // GET TENANT BY ID
