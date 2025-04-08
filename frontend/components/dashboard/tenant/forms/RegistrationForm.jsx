@@ -43,7 +43,11 @@ const RegistrationForm = () => {
           <div className="grid gap-6 md:grid-cols-2">
             <div className="grid gap-2">
               <Label htmlFor="name">Full Name</Label>
-              <Input id="name" placeholder="John Doe" {...register("name")} />
+              <Input
+                id="name"
+                placeholder="Dawit Moges"
+                {...register("name")}
+              />
             </div>
 
             <div className="grid gap-2">
@@ -51,7 +55,7 @@ const RegistrationForm = () => {
               <Input
                 id="email"
                 type="email"
-                placeholder="john@example.com"
+                placeholder="test@gmail.com"
                 {...register("email")}
               />
             </div>
@@ -61,7 +65,7 @@ const RegistrationForm = () => {
               <Input
                 id="phone"
                 type="tel"
-                placeholder="+123456789"
+                placeholder="0912*****"
                 {...register("phone")}
               />
             </div>
@@ -80,19 +84,27 @@ const RegistrationForm = () => {
               <Label htmlFor="street">Street Address</Label>
               <Input
                 id="street"
-                placeholder="123 Main St"
+                placeholder="Welo Sefer"
                 {...register("street")}
               />
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="city">City</Label>
-              <Input id="city" placeholder="New York" {...register("city")} />
+              <Input
+                id="city"
+                placeholder="Addis Ababa"
+                {...register("city")}
+              />
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="country">Country</Label>
-              <Input id="country" placeholder="USA" {...register("country")} />
+              <Input
+                id="country"
+                placeholder="Ethiopia"
+                {...register("country")}
+              />
             </div>
 
             <div className="grid gap-2">
@@ -172,7 +184,7 @@ const RegistrationForm = () => {
               <Input
                 id="businessPhone"
                 type="tel"
-                placeholder="+123456789"
+                placeholder="0912*****"
                 {...register("businessPhone")}
               />
             </div>
@@ -202,7 +214,7 @@ const RegistrationForm = () => {
               <Label htmlFor="emergencyName">Full Name</Label>
               <Input
                 id="emergencyName"
-                placeholder="Jane Doe"
+                placeholder="Moges Asefa"
                 {...register("emergencyName")}
               />
             </div>
@@ -214,10 +226,7 @@ const RegistrationForm = () => {
                 control={control}
                 defaultValue=""
                 render={({ field }) => (
-                  <Select
-                    value={field.value} // Pass the value from React Hook Form
-                    onValueChange={field.onChange} // Pass the onChange function to update React Hook Form
-                  >
+                  <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select relationship" />
                     </SelectTrigger>
@@ -239,7 +248,7 @@ const RegistrationForm = () => {
               <Input
                 id="emergencyPhone"
                 type="tel"
-                placeholder="+123456789"
+                placeholder="0912*****"
                 {...register("emergencyPhone")}
               />
             </div>
@@ -248,7 +257,7 @@ const RegistrationForm = () => {
               <Label htmlFor="emergencyStreet">Street Address</Label>
               <Input
                 id="emergencyStreet"
-                placeholder="123 Main St"
+                placeholder="Ayat Adebabay"
                 {...register("emergencyStreet")}
               />
             </div>
@@ -257,7 +266,7 @@ const RegistrationForm = () => {
               <Label htmlFor="emergencyCity">City</Label>
               <Input
                 id="emergencyCity"
-                placeholder="New York"
+                placeholder="Addis Ababa"
                 {...register("emergencyCity")}
               />
             </div>
@@ -266,7 +275,7 @@ const RegistrationForm = () => {
               <Label htmlFor="emergencyCountry">Country</Label>
               <Input
                 id="emergencyCountry"
-                placeholder="USA"
+                placeholder="Ethiopia"
                 {...register("emergencyCountry")}
               />
             </div>
