@@ -47,3 +47,50 @@ export const tenantSchema = z.object({
     businessEmail: z.string().email("Invalid Business Email"),
   }),
 });
+
+export const tenantSchemaDemo = z.object({
+  // Personal Info
+  name: z.string().default("John Doe"),
+  email: z.string().default("test@example.com"),
+  phone: z.string().default("000-000-0000"),
+  password: z.string().default("password123"),
+
+  // Address Info
+  address: z.object({
+    street: z.string().default("123 Main St"),
+    city: z.string().default("Unknown City"),
+    country: z.string().default("Unknown Country"),
+    postalCode: z.string().default("00000"),
+  }),
+
+  // Emergency Contact Info
+  emergencyContact: z.object({
+    name: z.string().default("Emergency Contact"),
+    relationship: z
+      .enum(["parent", "spouse", "sibling", "friend", "colleague", "other"], {
+        required_error: "Relationship is required",
+        invalid_type_error: "Invalid relationship type",
+      })
+      .default("parent"),
+    phone: z.string().default("000-000-0000"),
+    address: z.object({
+      street: z.string().default("456 Emergency St"),
+      city: z.string().default("Unknown City"),
+      country: z.string().default("Unknown Country"),
+      postalCode: z.string().default("00000"),
+    }),
+  }),
+
+  // Business & Lease Info
+  businessInfo: z.object({
+    businessName: z.string().default("ABC Corp"),
+    businessType: z
+      .enum(["retail", "food", "services", "office", "commercial", "other"], {
+        required_error: "Business type is required",
+        invalid_type_error: "Invalid business type",
+      })
+      .default("retail"),
+    businessPhone: z.string().default("000-000-0000"),
+    businessEmail: z.string().default("business@example.com"),
+  }),
+});
