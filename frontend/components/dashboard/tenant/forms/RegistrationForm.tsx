@@ -12,7 +12,10 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Upload } from "lucide-react";
-import { Controller, useForm } from "react-hook-form";
+import InputError from "@/components/ui/InputError";
+import { Controller, type FieldValues, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { tenantSchema } from "@/lib/types";
 
 const RegistrationForm = () => {
   const {
@@ -21,12 +24,22 @@ const RegistrationForm = () => {
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm();
+  } = useForm({ resolver: zodResolver(tenantSchema) });
 
-  const onSubmit = async (data) => {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+  const onSubmit = async (data: FieldValues) => {
+    await new Promise((resolve) => setTimeout(resolve, 5000));
     console.log(data);
+
+    reset();
   };
+
+  if (isSubmitting) {
+    return (
+      <div className="w-full h-full flex justify-center items-center">
+        Submitting...
+      </div>
+    );
+  }
 
   return (
     <div className="border border-dashed rounded-md h-full mb-4 relative">
@@ -43,65 +56,105 @@ const RegistrationForm = () => {
           <div className="grid gap-6 md:grid-cols-2">
             <div className="grid gap-2">
               <Label htmlFor="name">Full Name</Label>
-              <Input id="name" placeholder="John Doe" {...register("name")} />
+              <Input
+                className={errors.name ? "border-destructive" : ""}
+                id="name"
+                placeholder="Dawit Moges"
+                {...register("name")}
+              />
+              {errors.name && <InputError message={errors.name.message} />}
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="email">Email Address</Label>
               <Input
+                className={errors.email ? "border-destructive" : ""}
                 id="email"
                 type="email"
-                placeholder="john@example.com"
+                placeholder="test@gmail.com"
                 {...register("email")}
               />
+              {errors.email && <InputError message={errors.email.message} />}
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="phone">Phone Number</Label>
               <Input
+                className={errors.phone ? "border-destructive" : ""}
                 id="phone"
                 type="tel"
-                placeholder="+123456789"
+                placeholder="0912*****"
                 {...register("phone")}
               />
+              {errors.phone && <InputError message={errors.phone.message} />}
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="password">Password</Label>
               <Input
+                className={errors.password ? "border-destructive" : ""}
                 id="password"
                 type="password"
                 placeholder="******"
                 {...register("password")}
               />
+              {errors.password && (
+                <InputError message={errors.password.message} />
+              )}
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="street">Street Address</Label>
               <Input
+                className={errors.address?.street ? "border-destructive" : ""}
                 id="street"
-                placeholder="123 Main St"
-                {...register("street")}
+                placeholder="Welo Sefer"
+                {...register("address.street")}
               />
+              {errors.address?.street && (
+                <InputError message={errors.address.street.message} />
+              )}
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="city">City</Label>
-              <Input id="city" placeholder="New York" {...register("city")} />
+              <Input
+                className={errors.address?.city ? "border-destructive" : ""}
+                id="city"
+                placeholder="Addis Ababa"
+                {...register("address.city")}
+              />
+              {errors.address?.city && (
+                <InputError message={errors.address.city.message} />
+              )}
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="country">Country</Label>
-              <Input id="country" placeholder="USA" {...register("country")} />
+              <Input
+                className={errors.address?.country ? "border-destructive" : ""}
+                id="country"
+                placeholder="Ethiopia"
+                {...register("address.country")}
+              />
+              {errors.address?.country && (
+                <InputError message={errors.address.country.message} />
+              )}
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="postalCode">Postal Code</Label>
               <Input
+                className={
+                  errors.address?.postalCode ? "border-destructive" : ""
+                }
                 id="postalCode"
                 placeholder="10001"
-                {...register("postalCode")}
+                {...register("address.postalCode")}
               />
+              {errors.address?.postalCode && (
+                <InputError message={errors.address.postalCode.message} />
+              )}
             </div>
 
             <div className="grid gap-2">
@@ -134,24 +187,34 @@ const RegistrationForm = () => {
             <div className="grid gap-2">
               <Label htmlFor="businessName">Business Name</Label>
               <Input
+                className={
+                  errors.businessInfo?.businessName ? "border-destructive" : ""
+                }
                 id="businessName"
                 placeholder="ABC Corp"
-                {...register("businessName")}
+                {...register("businessInfo.businessName")}
               />
+              {errors.businessInfo?.businessName && (
+                <InputError
+                  message={errors.businessInfo.businessName.message}
+                />
+              )}
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="businessType">Business Type</Label>
               <Controller
-                name="businessType"
+                name="businessInfo.businessType"
                 control={control}
-                defaultValue=""
                 render={({ field }) => (
-                  <Select
-                    value={field.value} // Pass the value from React Hook Form
-                    onValueChange={field.onChange} // Pass the onChange function to update React Hook Form
-                  >
-                    <SelectTrigger className="w-full">
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger
+                      className={`${
+                        errors.businessInfo?.businessType
+                          ? "border-destructive"
+                          : ""
+                      } w-full`}
+                    >
                       <SelectValue placeholder="Select business type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -165,26 +228,47 @@ const RegistrationForm = () => {
                   </Select>
                 )}
               />
+              {errors.businessInfo?.businessType && (
+                <InputError
+                  message={errors.businessInfo.businessType.message}
+                />
+              )}
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="businessPhone">Business Phone</Label>
               <Input
+                className={
+                  errors.businessInfo?.businessPhone ? "border-destructive" : ""
+                }
                 id="businessPhone"
                 type="tel"
-                placeholder="+123456789"
-                {...register("businessPhone")}
+                placeholder="0912*****"
+                {...register("businessInfo.businessPhone")}
               />
+              {errors.businessInfo?.businessPhone && (
+                <InputError
+                  message={errors.businessInfo.businessPhone.message}
+                />
+              )}
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="businessEmail">Business Email</Label>
               <Input
+                className={
+                  errors.businessInfo?.businessEmail ? "border-destructive" : ""
+                }
                 id="businessEmail"
                 type="email"
                 placeholder="business@example.com"
-                {...register("businessEmail")}
+                {...register("businessInfo.businessEmail")}
               />
+              {errors.businessInfo?.businessEmail && (
+                <InputError
+                  message={errors.businessInfo.businessEmail.message}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -201,24 +285,32 @@ const RegistrationForm = () => {
             <div className="grid gap-2">
               <Label htmlFor="emergencyName">Full Name</Label>
               <Input
+                className={
+                  errors.emergencyContact?.name ? "border-destructive" : ""
+                }
                 id="emergencyName"
-                placeholder="Jane Doe"
-                {...register("emergencyName")}
+                placeholder="Moges Asefa"
+                {...register("emergencyContact.name")}
               />
+              {errors.emergencyContact?.name && (
+                <InputError message={errors.emergencyContact.name.message} />
+              )}
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="emergencyRelationship">Relationship</Label>
               <Controller
-                name="emergencyRelationship"
+                name="emergencyContact.relationship"
                 control={control}
-                defaultValue=""
                 render={({ field }) => (
-                  <Select
-                    value={field.value} // Pass the value from React Hook Form
-                    onValueChange={field.onChange} // Pass the onChange function to update React Hook Form
-                  >
-                    <SelectTrigger className="w-full">
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger
+                      className={`${
+                        errors.emergencyContact?.relationship
+                          ? "border-destructive"
+                          : ""
+                      } w-full`}
+                    >
                       <SelectValue placeholder="Select relationship" />
                     </SelectTrigger>
                     <SelectContent>
@@ -232,52 +324,103 @@ const RegistrationForm = () => {
                   </Select>
                 )}
               />
+              {errors.emergencyContact?.relationship && (
+                <InputError
+                  message={errors.emergencyContact.relationship.message}
+                />
+              )}
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="emergencyPhone">Phone</Label>
               <Input
+                className={
+                  errors.emergencyContact?.phone ? "border-destructive" : ""
+                }
                 id="emergencyPhone"
                 type="tel"
-                placeholder="+123456789"
-                {...register("emergencyPhone")}
+                placeholder="0912*****"
+                {...register("emergencyContact.phone")}
               />
+              {errors.emergencyContact?.phone && (
+                <InputError message={errors.emergencyContact.phone.message} />
+              )}
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="emergencyStreet">Street Address</Label>
               <Input
+                className={
+                  errors.emergencyContact?.address?.street
+                    ? "border-destructive"
+                    : ""
+                }
                 id="emergencyStreet"
-                placeholder="123 Main St"
-                {...register("emergencyStreet")}
+                placeholder="Ayat Adebabay"
+                {...register("emergencyContact.address.street")}
               />
+              {errors.emergencyContact?.address?.street && (
+                <InputError
+                  message={errors.emergencyContact.address.street.message}
+                />
+              )}
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="emergencyCity">City</Label>
               <Input
+                className={
+                  errors.emergencyContact?.address?.city
+                    ? "border-destructive"
+                    : ""
+                }
                 id="emergencyCity"
-                placeholder="New York"
-                {...register("emergencyCity")}
+                placeholder="Addis Ababa"
+                {...register("emergencyContact.address.city")}
               />
+              {errors.emergencyContact?.address?.city && (
+                <InputError
+                  message={errors.emergencyContact.address.city.message}
+                />
+              )}
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="emergencyCountry">Country</Label>
               <Input
+                className={
+                  errors.emergencyContact?.address?.country
+                    ? "border-destructive"
+                    : ""
+                }
                 id="emergencyCountry"
-                placeholder="USA"
-                {...register("emergencyCountry")}
+                placeholder="Ethiopia"
+                {...register("emergencyContact.address.country")}
               />
+              {errors.emergencyContact?.address?.country && (
+                <InputError
+                  message={errors.emergencyContact.address.country.message}
+                />
+              )}
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="emergencyPostalCode">Postal Code</Label>
               <Input
+                className={
+                  errors.emergencyContact?.address?.postalCode
+                    ? "border-destructive"
+                    : ""
+                }
                 id="emergencyPostalCode"
                 placeholder="10001"
-                {...register("emergencyPostalCode")}
+                {...register("emergencyContact.address.postalCode")}
               />
+              {errors.emergencyContact?.address?.postalCode && (
+                <InputError
+                  message={errors.emergencyContact.address.postalCode.message}
+                />
+              )}
             </div>
           </div>
         </div>
