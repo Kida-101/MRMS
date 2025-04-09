@@ -76,9 +76,9 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  --chart-completed: 120 60% 40%; /* Green */
-  --chart-pending: 60 80% 50%; /* Yellow */
-  --chart-overdue: 0 80% 50%; /* Red */
+  --chart-completed: 113 100% 53%; /* Green */
+  --chart-pending: 59 100% 48%; /* Yellow */
+  --chart-overdue: 360 100% 55%; /* Red */
   --chart-revenue: 153 100% 39%;
   --chart-tenant:  200 100% 39%;
   --chart-vacoccu: 143 100% 39%;

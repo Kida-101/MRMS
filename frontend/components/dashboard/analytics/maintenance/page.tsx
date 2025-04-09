@@ -34,7 +34,7 @@ const chartConfig = {
         color: "hsl(var(--chart-completed))", // Green
       },
       pending: {
-        label: "Pending",
+        label: "Waiting",
         color: "hsl(var(--chart-pending))", // Yellow
       },
       overdue: {
@@ -49,7 +49,7 @@ export default function Maintenance() {
       }, [])
   return (
     <Card className="flex flex-col">
-      <CardHeader className="items-center pb-0">
+      <CardHeader className="items-center pb-0 -mb-10">
         <CardTitle>Maintenance Information</CardTitle>
         <CardDescription>January - June 2024</CardDescription>{/* get data from the backend */}
       </CardHeader>
@@ -97,9 +97,9 @@ export default function Maintenance() {
                                     <tspan
                                       x={viewBox.cx}
                                       y={(viewBox.cy || 0) + 24}
-                                      className="fill-muted-foreground"
+                                      className="fill-muted-foreground "
                                     >
-                                    Expected Income
+                                    Total Request
                                     </tspan>
                                   </text>
                                 )

@@ -83,7 +83,7 @@ export default function Revenue() {
         <div className="flex gap-2 font-medium leading-none ml-auto mr-auto">
           Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
         </div>
-        <div className="leading-none text-muted-foreground mb-5">
+        <div className="leading-none text-muted-foreground">
           Showing total visitors for the last 6 months
         </div>
       </CardFooter>

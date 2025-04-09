@@ -49,7 +49,7 @@ export default function PaymentInformation() {
 
   return (
     <Card className="flex flex-col">
-      <CardHeader className="items-center pb-0">
+      <CardHeader className="items-center pb-0 -mb-10">
         <CardTitle>Payment Information</CardTitle>
         <CardDescription>January - June 2024</CardDescription>{/* get data from the backend */}
       </CardHeader>

@@ -68,7 +68,7 @@ export default function VacantVsOccupied() {
         <div className="flex gap-2 font-medium leading-none mt-2 ml-auto mr-auto">
           Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
         </div>
-        <div className="leading-none text-muted-foreground mb-8">
+        <div className="leading-none text-muted-foreground mb-9">
           Showing total visitors for the last 6 months
         </div>
       </CardFooter>

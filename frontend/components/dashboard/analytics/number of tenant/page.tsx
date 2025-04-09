@@ -37,7 +37,7 @@ export default function NumberOfTenant() {
     <Card>
       <CardHeader>
         <CardTitle>Number of tenant information</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardDescription className="mb-5">January - June 2024</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
@@ -59,7 +59,7 @@ export default function NumberOfTenant() {
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none mt-5 ml-auto mr-auto">
+        <div className="flex gap-2 font-medium leading-none ml-auto mr-auto">
           Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
         </div>
         <div className="leading-none text-muted-foreground mb-8">
