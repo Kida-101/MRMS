@@ -31,10 +31,18 @@ const TenantSchema = new Schema(
       name: { type: String, required: true },
       relationship: {
         type: String,
-        enum: ['parent', 'spouse', 'sibling', 'friend','colleague', 'other'],
+        enum: ['parent', 'spouse', 'sibling', 'friend', 'colleague', 'other'],
         required: true,
       },
       phone: { type: String, required: true },
+      email: {
+        type: String,
+        trim: true,
+        lowercase: true,
+        unique: true,
+        required: true,
+        validate: [validateEmail, 'Please provide a valid email address'],
+      },
       address: {
         street: String,
         city: String,

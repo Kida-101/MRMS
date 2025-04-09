@@ -7,7 +7,14 @@ import Room from '../models/room.model.js';
 // GET ALL TENANTS
 export const getTenants = async (req, res) => {
   try {
-    const tenants = await Tenant.find();
+    const tenants = await Tenant.find()
+      .populate({
+        path: "leaseId",
+        populate: {
+          path: "roomId",
+          model: "Room",
+        }
+      });
     if (!tenants) {
       return res.status(404).json({ success: false, message: 'No tenants found' });
     }
