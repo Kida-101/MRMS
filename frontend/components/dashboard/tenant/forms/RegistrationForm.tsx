@@ -18,6 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { tenantSchemaDemo } from "@/lib/types";
 import MoveBack from "@/components/ui/MoveBack";
 import Loading from "@/components/ui/Loading";
+import toast from "react-hot-toast";
 
 const RegistrationForm = () => {
   const {
@@ -31,6 +32,7 @@ const RegistrationForm = () => {
   const onSubmit = async (data: FieldValues) => {
     await new Promise((resolve) => setTimeout(resolve, 3000));
     console.log(data);
+    toast.success(`${data.name?.split(" ").at(0)} successfully registered`);
 
     reset();
   };

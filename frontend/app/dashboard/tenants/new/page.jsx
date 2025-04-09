@@ -1,9 +1,9 @@
-import RegistrationForm from "@/components/dashboard/tenant/forms/RegistrationForm";
+import TenantRegistration from "@/components/dashboard/tenant/forms/TenantRegistration";
 
 const page = () => {
   return (
-    <div>
-      <RegistrationForm />
+    <div className="h-full">
+      <TenantRegistration />
     </div>
   );
 };

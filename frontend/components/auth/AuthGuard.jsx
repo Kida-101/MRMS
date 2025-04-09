@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import useUser from '@/hooks/useUser';
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import useUser from "@/hooks/useUser";
 
 export default function AuthGuard({ children }) {
   const router = useRouter();
@@ -12,7 +12,7 @@ export default function AuthGuard({ children }) {
   useEffect(() => {
     if (!isLoading) {
       if (!isLoggedIn || !user) {
-        router.replace('/auth/signin');
+        router.replace("/auth/signin");
       } else {
         setIsCheckingAuth(false);
       }

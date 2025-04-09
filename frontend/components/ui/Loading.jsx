@@ -7,7 +7,7 @@ const Loading = () => {
           y1="25"
           x2="10"
           y2="25"
-          stroke="#232323"
+          stroke="#898989"
           strokeWidth="6"
           strokeLinecap="round"
         >
@@ -31,7 +31,7 @@ const Loading = () => {
           y1="25"
           x2="30"
           y2="25"
-          stroke="#232323"
+          stroke="#898989"
           strokeWidth="6"
           strokeLinecap="round"
         >
@@ -55,7 +55,7 @@ const Loading = () => {
           y1="25"
           x2="50"
           y2="25"
-          stroke="#232323"
+          stroke="#898989"
           strokeWidth="6"
           strokeLinecap="round"
         >
@@ -79,7 +79,7 @@ const Loading = () => {
           y1="25"
           x2="70"
           y2="25"
-          stroke="#232323"
+          stroke="#898989"
           strokeWidth="6"
           strokeLinecap="round"
         >
@@ -103,7 +103,7 @@ const Loading = () => {
           y1="25"
           x2="90"
           y2="25"
-          stroke="#232323"
+          stroke="#898989"
           strokeWidth="6"
           strokeLinecap="round"
         >

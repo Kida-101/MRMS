@@ -46,6 +46,19 @@ export const tenantSchema = z.object({
     businessPhone: z.string().min(1, "Business Phone is required"),
     businessEmail: z.string().email("Invalid Business Email"),
   }),
+
+  // Lease Info
+  lease: z.object({
+    startDate: z.string().min(1, "Lease Start Date is required"),
+    endDate: z.string().min(1, "Lease End Date is required"),
+    monthlyRent: z.string().min(1, "Monthly Rent is required"),
+    securityDeposit: z.string().min(1, "Security Deposit is required"),
+    paymentSchedule: z.enum(["monthly", "quarterly", "annually"], {
+      required_error: "Payment Schedule is required",
+      invalid_type_error: "Invalid payment schedule type",
+    }),
+    // documents: z.string().optional(),
+  }),
 });
 
 export const tenantSchemaDemo = z.object({
@@ -92,5 +105,20 @@ export const tenantSchemaDemo = z.object({
       .default("retail"),
     businessPhone: z.string().default("000-000-0000"),
     businessEmail: z.string().default("business@example.com"),
+  }),
+
+  // Lease Info
+  lease: z.object({
+    startDate: z.string().default("2023-01-01"),
+    endDate: z.string().default("2024-01-01"),
+    monthlyRent: z.string().default("1000"), // Default to $1000
+    securityDeposit: z.string().default("2000"), // Default to $2000
+    paymentSchedule: z
+      .enum(["monthly", "quarterly", "annually"], {
+        required_error: "Payment Schedule is required",
+        invalid_type_error: "Invalid payment schedule type",
+      })
+      .default("monthly"), // Default to "monthly"
+    // documents: z.string().default("lease-agreement.pdf"),
   }),
 });
