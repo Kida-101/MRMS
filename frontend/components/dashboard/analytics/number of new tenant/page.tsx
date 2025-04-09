@@ -37,7 +37,7 @@ export default function NewTenants() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Bar Chart - Horizontal</CardTitle>
+        <CardTitle>New tenant information</CardTitle>
         <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
       <CardContent>
