@@ -79,6 +79,10 @@
   --chart-completed: 120 60% 40%; /* Green */
   --chart-pending: 60 80% 50%; /* Yellow */
   --chart-overdue: 0 80% 50%; /* Red */
+  --chart-revenue: 153 100% 39%;
+  --chart-tenant:  200 100% 39%;
+  --chart-vacoccu: 143 100% 39%;
+  --chart-newtenant:303 100% 43%;
 }
 
 .dark {
@@ -116,6 +120,10 @@
   --chart-completed: 120 60% 40%; /* Green */
   --chart-pending: 60 80% 50%; /* Yellow */
   --chart-overdue: 0 80% 50%; /* Red */
+  --chart-revenue: 153 100% 39%;
+  --chart-tenant:  200 100% 39%;
+  --chart-vacoccu: 143 100% 39%;
+  --chart-newtenant:303 100% 43%;
 }
 
 @layer base {
