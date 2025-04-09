@@ -6,6 +6,9 @@ import {
   FileText,
   ChartColumnBig,
   Settings,
+  Wrench,
+  DoorClosed,
+  BellDot,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -38,6 +41,21 @@ const items = [
     title: "Leases",
     url: "/dashboard/leases",
     icon: FileText,
+  },
+  {
+    title: "Rooms",
+    url: "/dashboard/rooms",
+    icon: DoorClosed,
+  },
+  {
+    title: "Maintainance",
+    url: "/dashboard/maintainance",
+    icon: Wrench,
+  },
+  {
+    title: "Notifications",
+    url: "/dashboard/notifications",
+    icon: BellDot,
   },
   {
     title: "Admins",
@@ -75,7 +93,11 @@ export function AppSidebar() {
                   asChild
                   size="lg"
                   tooltip={item.title}
-                  isActive={item.url === pathname}
+                  isActive={
+                    item.url === pathname ||
+                    (pathname.startsWith(`${item.url}/`) &&
+                      item.url != "/dashboard")
+                  }
                 >
                   <Link href={item.url} className="flex items-center gap-3">
                     <item.icon />

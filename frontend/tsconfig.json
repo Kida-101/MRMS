@@ -28,7 +28,8 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx",
-    "app/dashboard/tenants/page.jsx"
+    "app/dashboard/tenants/page.jsx",
+    "components/dashboard/tenant/forms/RegistrationForm.tsx"
   ],
   "exclude": ["node_modules"]
 }
