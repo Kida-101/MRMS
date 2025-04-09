@@ -17,10 +17,7 @@ const RoomSchema = new Schema(
       enum: ['vacant', 'occupied', 'under-maintenance'],
       default: 'vacant'
     },
-    amenities: [{
-      type: String,
-      enum: ['wifi', 'ac', 'furniture', 'restroom', 'parking', 'security', 'other']
-    }],
+    amenities: [{ type: String }],
     size: {
       type: Number,
       required: [true, 'Size in sq.ft is required']
