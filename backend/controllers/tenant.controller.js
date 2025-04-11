@@ -23,6 +23,29 @@ export const getTenants = async (req, res) => {
   }
 };
 
+// GET TENANT BY ID
+export const getTenant = async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return res.status(400).json({ success: false, message: 'Id is required' });
+  }
+  try {
+    const tenant = await Tenant.findById(id).populate({
+      path: "leaseId",
+      populate: {
+        path: "roomId",
+        model: "Room",
+      }
+    });
+    if (!tenant) {
+      return res.status(404).json({ success: false, message: 'Tenant not found' });
+    }
+    res.status(200).json({ success: true, message: "Tenant fetched successfully", data: tenant });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // CREATE TENANT
 export const createTenant = async (req, res) => {
   try {
@@ -43,7 +66,7 @@ export const createTenant = async (req, res) => {
       emergencyContact,
       businessInfo,
       personalInfo: { email, password, ...personalInfo },
-      leaseInfo: { roomId, _id, ...leaseInfo }
+      leaseInfo: { roomId, leaseId, ...leaseInfo }
     } = body;
 
     // Check Room Availability
@@ -127,29 +150,6 @@ export const createTenant = async (req, res) => {
   }
 };
 
-// GET TENANT BY ID
-export const getTenant = async (req, res) => {
-  const { id } = req.params;
-  if (!id) {
-    return res.status(400).json({ success: false, message: 'Id is required' });
-  }
-  try {
-    const tenant = await Tenant.findById(id).populate({
-      path: "leaseId",
-      populate: {
-        path: "roomId",
-        model: "Room",
-      }
-    });
-    if (!tenant) {
-      return res.status(404).json({ success: false, message: 'Tenant not found' });
-    }
-    res.status(200).json({ success: true, message: "Tenant fetched successfully", data: tenant });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
 // UPDATE TENANT
 export const updateTenant = async (req, res) => {
   const { id } = req.params;
@@ -158,12 +158,11 @@ export const updateTenant = async (req, res) => {
     return res.status(400).json({ success: false, message: 'Id is required' });
   }
   try {
-    // Destructure Data
     const {
       emergencyContact,
       businessInfo,
       personalInfo,
-      leaseInfo: { _id, ...leaseInfo }
+      leaseInfo: { leaseId, ...leaseInfo }
     } = data;
 
     if (personalInfo.password) {
@@ -171,7 +170,9 @@ export const updateTenant = async (req, res) => {
       personalInfo.password = hashedPassword;
     }
 
-    const leaseDoc = await Lease.findByIdAndUpdate(_id, { ...leaseInfo }, { new: true })
+    console.log(leaseId, "lease update")
+
+    const leaseDoc = await Lease.findByIdAndUpdate(leaseId, { ...leaseInfo }, { new: true })
     if (!leaseDoc) {
       return res.status(400).json({ success: false, message: "Failed to update lease" })
     }
