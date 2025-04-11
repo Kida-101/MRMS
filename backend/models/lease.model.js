@@ -18,10 +18,6 @@ const LeaseSchema = new Schema(
       type: Date,
       required: [true, 'Lease end date is required']
     },
-    monthlyRent: {
-      type: Number,
-      required: [true, 'Monthly rent amount is required']
-    },
     securityDeposit: {
       type: Number,
       required: [true, 'Security deposit amount is required']
