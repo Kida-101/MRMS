@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import Tenant from '../models/tenant.model.js';
 import Lease from '../models/lease.model.js';
@@ -14,7 +13,7 @@ export const getTenants = async (req, res) => {
           path: "roomId",
           model: "Room",
         }
-      });
+      }).sort({ updatedAt: -1 });
     if (!tenants) {
       return res.status(404).json({ success: false, message: 'No tenants found' });
     }
@@ -44,7 +43,7 @@ export const createTenant = async (req, res) => {
       emergencyContact,
       businessInfo,
       personalInfo: { email, password, ...personalInfo },
-      leaseInfo: { roomId, ...leaseInfo }
+      leaseInfo: { roomId, _id, ...leaseInfo }
     } = body;
 
     // Check Room Availability
@@ -80,11 +79,12 @@ export const createTenant = async (req, res) => {
     }
 
     // Create Lease
-    const lease = await Lease.create({
+    const leaseData = {
       ...leaseInfo,
       tenantId: tenant._id,
       roomId
-    });
+    };
+    const lease = await Lease.create({ ...leaseData });
 
     if (!lease) {
       await Tenant.findByIdAndDelete(tenant._id);
@@ -97,7 +97,7 @@ export const createTenant = async (req, res) => {
       // $push: { leaseHistory: lease._id }
     });
 
-    if (updatedRoom.status !== 'occupied') {
+    if (!updatedRoom) {
       await Lease.findByIdAndDelete(lease._id);
       await Tenant.findByIdAndDelete(tenant._id);
       return res.status(400).json({ success: false, message: "Failed to update room status!" })
@@ -158,15 +158,36 @@ export const updateTenant = async (req, res) => {
     return res.status(400).json({ success: false, message: 'Id is required' });
   }
   try {
-    if (data.password) {
-      const hashedPassword = await bcrypt.hash(data.password, 10);
-      data.password = hashedPassword;
+    // Destructure Data
+    const {
+      emergencyContact,
+      businessInfo,
+      personalInfo,
+      leaseInfo: { _id, ...leaseInfo }
+    } = data;
+
+    if (personalInfo.password) {
+      const hashedPassword = await bcrypt.hash(personalInfo.password, 10);
+      personalInfo.password = hashedPassword;
     }
-    const tenant = await Tenant.findByIdAndUpdate(id, data, { new: true });
-    if (!tenant) {
-      return res.status(404).json({ success: false, message: 'Tenant not found' });
+
+    const leaseDoc = await Lease.findByIdAndUpdate(_id, { ...leaseInfo }, { new: true })
+    if (!leaseDoc) {
+      return res.status(400).json({ success: false, message: "Failed to update lease" })
     }
-    res.status(200).json({ success: true, message: 'Tenant updated successfully', data: tenant });
+
+    const tenantDoc = await Tenant.findByIdAndUpdate(id, { emergencyContact, businessInfo, ...personalInfo }, { new: true }).populate({
+      path: "leaseId",
+      populate: {
+        path: "roomId",
+        model: "Room",
+      }
+    });;
+    if (!tenantDoc) {
+      return res.status(404).json({ success: false, message: 'Tenant not updated successfully' });
+    }
+
+    res.status(200).json({ success: true, message: 'Tenant updated successfully', data: tenantDoc });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
