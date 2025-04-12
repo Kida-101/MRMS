@@ -170,8 +170,6 @@ export const updateTenant = async (req, res) => {
       personalInfo.password = hashedPassword;
     }
 
-    console.log(leaseId, "lease update")
-
     const leaseDoc = await Lease.findByIdAndUpdate(leaseId, { ...leaseInfo }, { new: true })
     if (!leaseDoc) {
       return res.status(400).json({ success: false, message: "Failed to update lease" })
@@ -196,16 +194,29 @@ export const updateTenant = async (req, res) => {
 
 // DELETE TENANT
 export const deleteTenant = async (req, res) => {
-  const { id } = req.params;
-  if (!id) {
-    return res.status(400).json({ success: false, message: 'Id is required' });
+  const { leaseId, roomId, tenantId } = req.query;
+
+  if (!roomId || !tenantId || !leaseId) {
+    return res.status(400).json({ success: false, message: 'Missing tenant id or room id' });
   }
+
   try {
-    const tenant = await Tenant.findByIdAndDelete(id);
+    const tenant = await Tenant.findByIdAndDelete(tenantId);
     if (!tenant) {
       return res.status(404).json({ success: false, message: 'Tenant not found' });
     }
-    res.status(200).json({ success: true, message: 'Tenant deleted successfully' });
+
+    const lease = await Lease.findByIdAndDelete(leaseId);
+    if (!lease) {
+      return res.status(404).json({ success: false, message: 'Lease not found' });
+    }
+
+    const room = await Room.findByIdAndUpdate(roomId, { status: 'vacant' }, { new: true });
+    if (!room) {
+      return res.status(404).json({ success: false, message: 'Room not found' });
+    }
+
+    res.status(200).json({ success: true, message: 'Tenant and lease deleted and room status updated' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
