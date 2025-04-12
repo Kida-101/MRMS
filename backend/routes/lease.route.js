@@ -7,6 +7,6 @@ leaseRouter.post('/leases', createLease);
 leaseRouter.get('/leases', getLeases);
 leaseRouter.get('/leases/:id', getLease);
 leaseRouter.put('/leases/:id', updateLease);
-leaseRouter.delete('/leases/:id', deleteLease);
+leaseRouter.delete('/leases/delete', deleteLease);
 
 export default leaseRouter;
