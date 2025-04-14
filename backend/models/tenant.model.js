@@ -39,7 +39,6 @@ const TenantSchema = new Schema(
         type: String,
         trim: true,
         lowercase: true,
-        unique: true,
         required: true,
         validate: [validateEmail, 'Please provide a valid email address'],
       },
@@ -74,9 +73,37 @@ const TenantSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'Lease',
     },
+    roomId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Room',
+    },
   },
   { timestamps: true }
 );
+
+TenantSchema.pre('deleteOne',
+  { document: false, query: true },
+  async function (next) {
+    try {
+      const tenant = await this.model.findOne(this.getFilter());
+      if (!tenant) return next();
+
+      await mongoose.model('Lease').findByIdAndDelete(tenant.leaseId);
+
+      await mongoose.model('Room').updateMany(
+        console.log("roomId", tenant.roomId),
+        { _id: { $in: tenant.roomId } }
+        , {
+          status: 'vacant',
+          $pull: { leaseHistory: tenant._id }
+        }
+      );
+      next();
+    } catch (error) {
+      next(error);
+    }
+  }
+)
 
 const Tenant = mongoose.models.Tenant || mongoose.model('Tenant', TenantSchema);
 export default Tenant;

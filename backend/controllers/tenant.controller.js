@@ -130,6 +130,7 @@ export const createTenant = async (req, res) => {
     const updatedTenant = await Tenant.findByIdAndUpdate(
       tenant._id,
       { $set: { leaseId: lease._id } },
+      { $set: { roomId: roomId } },
       { new: true }
     ).populate({
       path: "leaseId",
@@ -194,30 +195,28 @@ export const updateTenant = async (req, res) => {
 
 // DELETE TENANT
 export const deleteTenant = async (req, res) => {
-  const { leaseId, roomId, tenantId } = req.query;
-
-  if (!roomId || !tenantId || !leaseId) {
-    return res.status(400).json({ success: false, message: 'Missing tenant id or room id' });
-  }
+  const { leaseId } = req.query;
 
   try {
-    const tenant = await Tenant.findByIdAndDelete(tenantId);
-    if (!tenant) {
-      return res.status(404).json({ success: false, message: 'Tenant not found' });
+    // Delete tenant (middleware will handle tenant and room updates)
+    const result = await Lease.deleteOne({ _id: leaseId });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Lease not found' 
+      });
     }
 
-    const lease = await Lease.findByIdAndDelete(leaseId);
-    if (!lease) {
-      return res.status(404).json({ success: false, message: 'Lease not found' });
-    }
+    res.status(200).json({ 
+      success: true, 
+      message: 'Lease and tenant deleted successfully' 
+    });
 
-    const room = await Room.findByIdAndUpdate(roomId, { status: 'vacant' }, { new: true });
-    if (!room) {
-      return res.status(404).json({ success: false, message: 'Room not found' });
-    }
-
-    res.status(200).json({ success: true, message: 'Tenant and lease deleted and room status updated' });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ 
+      success: false, 
+      message: error.message 
+    });
   }
-};
+}

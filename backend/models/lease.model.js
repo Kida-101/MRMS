@@ -50,10 +50,7 @@ LeaseSchema.pre(
       const lease = await this.model.findOne(this.getFilter());
       if (!lease) return next();
 
-      // 1. Delete the associated tenant
       await mongoose.model('Tenant').findByIdAndDelete(lease.tenantId);
-
-      // 2. Update rooms to vacant status
       await mongoose.model('Room').updateMany(
         { _id: { $in: lease.roomId } },
         {
