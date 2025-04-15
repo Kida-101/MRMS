@@ -37,8 +37,6 @@ const TenantSchema = new Schema(
       phone: { type: String, required: true },
       email: {
         type: String,
-        trim: true,
-        lowercase: true,
         required: true,
         validate: [validateEmail, 'Please provide a valid email address'],
       },

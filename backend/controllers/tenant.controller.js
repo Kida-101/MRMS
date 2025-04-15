@@ -71,7 +71,7 @@ export const createTenant = async (req, res) => {
 
     // Check Room Availability
     const existingRoom = await Room.findById(roomId);
-    if (!existingRoom || existingRoom.status !== 'vacant') {
+    if (!existingRoom || existingRoom.status === 'occupied') {
       return res.status(400).json({
         success: false,
         message: 'Room is not available'
@@ -117,8 +117,12 @@ export const createTenant = async (req, res) => {
     // Update Room Status
     const updatedRoom = await Room.findByIdAndUpdate(roomId, {
       status: 'occupied',
+      tenantId: tenant._id,
+      leaseId: lease._id,
       // $push: { leaseHistory: lease._id }
-    });
+    },
+      { new: true },
+    );
 
     if (!updatedRoom) {
       await Lease.findByIdAndDelete(lease._id);
@@ -130,7 +134,7 @@ export const createTenant = async (req, res) => {
     const updatedTenant = await Tenant.findByIdAndUpdate(
       tenant._id,
       { $set: { leaseId: lease._id } },
-      { $set: { roomId: roomId } },
+      { $set: { roomId: updatedRoom._id } },
       { new: true }
     ).populate({
       path: "leaseId",
@@ -202,21 +206,21 @@ export const deleteTenant = async (req, res) => {
     const result = await Lease.deleteOne({ _id: leaseId });
 
     if (result.deletedCount === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Lease not found' 
+      return res.status(404).json({
+        success: false,
+        message: 'Lease not found'
       });
     }
 
-    res.status(200).json({ 
-      success: true, 
-      message: 'Lease and tenant deleted successfully' 
+    res.status(200).json({
+      success: true,
+      message: 'Lease and tenant deleted successfully'
     });
 
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: error.message 
+    res.status(500).json({
+      success: false,
+      message: error.message
     });
   }
 }
