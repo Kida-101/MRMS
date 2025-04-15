@@ -14,7 +14,7 @@ import { Upload, ChevronRight, ChevronLeft } from "lucide-react";
 import InputError from "@/components/ui/InputError";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { tenantSchema } from "@/lib/types"; // Assuming the tenant schema is typed with Zod
+import { tenantSchemaDemo } from "@/lib/types"; // Assuming the tenant schema is typed with Zod
 import MoveBack from "@/components/ui/MoveBack";
 import Loading from "@/components/ui/Loading";
 import toast from "react-hot-toast";
@@ -22,8 +22,8 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
 
-// Infer the type from the Zod schema (assuming tenantSchema is a Zod schema)
-type TenantFormData = z.infer<typeof tenantSchema>;
+// Infer the type from the Zod schema (assuming tenantSchemaDemo is a Zod schema)
+type TenantFormData = z.infer<typeof tenantSchemaDemo>;
 
 const steps = [
   {
@@ -83,7 +83,7 @@ const TenantRegistration = () => {
     trigger,
     formState: { errors, isSubmitting },
   } = useForm<TenantFormData>({
-    resolver: zodResolver(tenantSchema),
+    resolver: zodResolver(tenantSchemaDemo),
   });
 
   const [currentStep, setCurrentStep] = useState(0);
