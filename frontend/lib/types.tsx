@@ -1,17 +1,19 @@
 import { z } from "zod";
 
 export const tenantSchema = z.object({
-  // Personal Info
-  name: z.string().min(1, "Full name is required"),
-  email: z.string().email("Invalid email address"),
-  phone: z.string().min(1, "Phone Number is required"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  // image: z.string().url("Must be a valid image URL").optional(),
-  address: z.object({
-    street: z.string().min(1, "Street Address is required"),
-    city: z.string().min(1, "City is required"),
-    country: z.string().min(1, "Country is required"),
-    postalCode: z.string().min(1, "Postal Code is required"),
+  personalInfo: z.object({
+    // Personal Info
+    name: z.string().min(1, "Full name is required"),
+    email: z.string().email("Invalid email address"),
+    phone: z.string().min(1, "Phone Number is required"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    // image: z.string().url("Must be a valid image URL").optional(),
+    address: z.object({
+      street: z.string().min(1, "Street Address is required"),
+      city: z.string().min(1, "City is required"),
+      country: z.string().min(1, "Country is required"),
+      postalCode: z.string().min(1, "Postal Code is required"),
+    }),
   }),
 
   // Emergency Contact Info
@@ -48,7 +50,7 @@ export const tenantSchema = z.object({
   }),
 
   // Lease Info
-  lease: z.object({
+  leaseInfo: z.object({
     startDate: z.string().min(1, "Lease Start Date is required"),
     endDate: z.string().min(1, "Lease End Date is required"),
     monthlyRent: z.string().min(1, "Monthly Rent is required"),

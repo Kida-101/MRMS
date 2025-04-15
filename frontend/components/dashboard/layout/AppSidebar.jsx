@@ -8,7 +8,6 @@ import {
   Settings,
   Wrench,
   DoorClosed,
-  BellDot,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -52,11 +51,7 @@ const items = [
     url: "/dashboard/maintainance",
     icon: Wrench,
   },
-  {
-    title: "Notifications",
-    url: "/dashboard/notifications",
-    icon: BellDot,
-  },
+
   {
     title: "Admins",
     url: "/dashboard/admins",

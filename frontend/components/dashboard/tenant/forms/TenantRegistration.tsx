@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Upload } from "lucide-react";
+import { Upload, ChevronRight, ChevronLeft } from "lucide-react";
 import InputError from "@/components/ui/InputError";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,14 +29,14 @@ const steps = [
   {
     title: "Step 1",
     fields: [
-      "name",
-      "email",
-      "phone",
-      "password",
-      "address.city",
-      "address.street",
-      "address.country",
-      "address.postalCode",
+      "personalInfo.name",
+      "personalInfo.email",
+      "personalInfo.phone",
+      "personalInfo.password",
+      "personalInfo.address.city",
+      "personalInfo.address.street",
+      "personalInfo.address.country",
+      "personalInfo.address.postalCode",
     ],
   },
   {
@@ -108,7 +108,9 @@ const TenantRegistration = () => {
   const onSubmit = async (data: TenantFormData) => {
     await new Promise((resolve) => setTimeout(resolve, 3000));
     console.log(data);
-    toast.success(`${data.name?.split(" ").at(0)} successfully registered`);
+    toast.success(
+      `${data.personalInfo.name?.split(" ").at(0)} successfully registered`
+    );
     setCurrentStep(0);
     reset();
   };
@@ -118,11 +120,11 @@ const TenantRegistration = () => {
   }
 
   return (
-    <div className="flex flex-col gap-4 h-full">
+    <div className="flex flex-col gap-4 h-auto">
       <div>
         <MoveBack text="Back" />
       </div>
-      <div className="border border-dashed rounded-md h-full mb-4 relative p-4 flex flex-col gap-8 ">
+      <div className="border border-dashed rounded-md h-full mb-4 relative px-4 py-6 flex flex-col gap-8 ">
         <div className="w-full max-w-3xl mx-auto px-4">
           <div className="mt-4 text-center text-sm text-muted-foreground animate-fade-in">
             Step {currentStep + 1} of {steps.length}
@@ -174,54 +176,72 @@ const TenantRegistration = () => {
                     <div className="grid gap-2">
                       <Label htmlFor="name">Full Name</Label>
                       <Input
-                        className={errors.name ? "border-destructive" : ""}
+                        className={
+                          errors.personalInfo?.name ? "border-destructive" : ""
+                        }
                         id="name"
                         placeholder="Dawit Moges"
-                        {...register("name")}
+                        {...register("personalInfo.name")}
                       />
-                      {errors.name && (
-                        <InputError message={errors.name.message} />
+                      {errors.personalInfo?.name && (
+                        <InputError
+                          message={errors.personalInfo?.name.message}
+                        />
                       )}
                     </div>
 
                     <div className="grid gap-2">
                       <Label htmlFor="email">Email Address</Label>
                       <Input
-                        className={errors.email ? "border-destructive" : ""}
+                        className={
+                          errors.personalInfo?.email ? "border-destructive" : ""
+                        }
                         id="email"
                         type="email"
                         placeholder="test@gmail.com"
-                        {...register("email")}
+                        {...register("personalInfo.email")}
                       />
-                      {errors.email && (
-                        <InputError message={errors.email.message} />
+                      {errors.personalInfo?.email && (
+                        <InputError
+                          message={errors.personalInfo?.email.message}
+                        />
                       )}
                     </div>
 
                     <div className="grid gap-2">
                       <Label htmlFor="phone">Phone Number</Label>
                       <Input
-                        className={errors.phone ? "border-destructive" : ""}
+                        className={
+                          errors.personalInfo?.phone ? "border-destructive" : ""
+                        }
                         id="phone"
                         type="tel"
                         placeholder="0912*****"
-                        {...register("phone")}
+                        {...register("personalInfo.phone")}
                       />
-                      {errors.phone && (
-                        <InputError message={errors.phone.message} />
+                      {errors.personalInfo?.phone && (
+                        <InputError
+                          message={errors.personalInfo?.phone.message}
+                        />
                       )}
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="password">Password</Label>
                       <Input
-                        className={errors.password ? "border-destructive" : ""}
+                        className={
+                          errors.personalInfo?.password
+                            ? "border-destructive"
+                            : ""
+                        }
                         id="password"
                         type="password"
                         placeholder="******"
-                        {...register("password")}
+                        {...register("personalInfo.password")}
                       />
-                      {errors.password && (
-                        <InputError message={errors.password.message} />
+                      {errors.personalInfo?.password && (
+                        <InputError
+                          message={errors.personalInfo?.password.message}
+                        />
                       )}
                     </div>
                   </div>
@@ -231,14 +251,18 @@ const TenantRegistration = () => {
                       <Label htmlFor="street">Street Address</Label>
                       <Input
                         className={
-                          errors.address?.street ? "border-destructive" : ""
+                          errors.personalInfo?.address?.street
+                            ? "border-destructive"
+                            : ""
                         }
                         id="street"
                         placeholder="Welo Sefer"
-                        {...register("address.street")}
+                        {...register("personalInfo.address.street")}
                       />
-                      {errors.address?.street && (
-                        <InputError message={errors.address.street.message} />
+                      {errors.personalInfo?.address?.street && (
+                        <InputError
+                          message={errors.personalInfo?.address?.street.message}
+                        />
                       )}
                     </div>
 
@@ -246,14 +270,18 @@ const TenantRegistration = () => {
                       <Label htmlFor="city">City</Label>
                       <Input
                         className={
-                          errors.address?.city ? "border-destructive" : ""
+                          errors.personalInfo?.address?.city
+                            ? "border-destructive"
+                            : ""
                         }
                         id="city"
                         placeholder="Addis Ababa"
-                        {...register("address.city")}
+                        {...register("personalInfo.address.city")}
                       />
-                      {errors.address?.city && (
-                        <InputError message={errors.address.city.message} />
+                      {errors.personalInfo?.address?.city && (
+                        <InputError
+                          message={errors.personalInfo?.address?.city.message}
+                        />
                       )}
                     </div>
 
@@ -261,14 +289,20 @@ const TenantRegistration = () => {
                       <Label htmlFor="country">Country</Label>
                       <Input
                         className={
-                          errors.address?.country ? "border-destructive" : ""
+                          errors.personalInfo?.address?.country
+                            ? "border-destructive"
+                            : ""
                         }
                         id="country"
                         placeholder="Ethiopia"
-                        {...register("address.country")}
+                        {...register("personalInfo.address.country")}
                       />
-                      {errors.address?.country && (
-                        <InputError message={errors.address.country.message} />
+                      {errors.personalInfo?.address?.country && (
+                        <InputError
+                          message={
+                            errors.personalInfo?.address?.country?.message
+                          }
+                        />
                       )}
                     </div>
 
@@ -276,15 +310,19 @@ const TenantRegistration = () => {
                       <Label htmlFor="postalCode">Postal Code</Label>
                       <Input
                         className={
-                          errors.address?.postalCode ? "border-destructive" : ""
+                          errors.personalInfo?.address?.postalCode
+                            ? "border-destructive"
+                            : ""
                         }
                         id="postalCode"
                         placeholder="10001"
-                        {...register("address.postalCode")}
+                        {...register("personalInfo.address.postalCode")}
                       />
-                      {errors.address?.postalCode && (
+                      {errors.personalInfo?.address?.postalCode && (
                         <InputError
-                          message={errors.address.postalCode.message}
+                          message={
+                            errors.personalInfo?.address?.postalCode?.message
+                          }
                         />
                       )}
                     </div>
@@ -605,14 +643,18 @@ const TenantRegistration = () => {
                       <Label htmlFor="startDate">Start Date</Label>
                       <Input
                         className={
-                          errors.lease?.startDate ? "border-destructive" : ""
+                          errors.leaseInfo?.startDate
+                            ? "border-destructive"
+                            : ""
                         }
                         id="startDate"
                         type="date"
-                        {...register("lease.startDate")}
+                        {...register("leaseInfo.startDate")}
                       />
-                      {errors.lease?.startDate && (
-                        <InputError message={errors.lease.startDate.message} />
+                      {errors.leaseInfo?.startDate && (
+                        <InputError
+                          message={errors.leaseInfo.startDate.message}
+                        />
                       )}
                     </div>
 
@@ -620,14 +662,16 @@ const TenantRegistration = () => {
                       <Label htmlFor="endDate">End Date</Label>
                       <Input
                         className={
-                          errors.lease?.endDate ? "border-destructive" : ""
+                          errors.leaseInfo?.endDate ? "border-destructive" : ""
                         }
                         id="endDate"
                         type="date"
-                        {...register("lease.endDate")}
+                        {...register("leaseInfo.endDate")}
                       />
-                      {errors.lease?.endDate && (
-                        <InputError message={errors.lease.endDate.message} />
+                      {errors.leaseInfo?.endDate && (
+                        <InputError
+                          message={errors.leaseInfo.endDate.message}
+                        />
                       )}
                     </div>
 
@@ -635,15 +679,17 @@ const TenantRegistration = () => {
                       <Label htmlFor="monthlyRent">Monthly Rent</Label>
                       <Input
                         className={
-                          errors.lease?.monthlyRent ? "border-destructive" : ""
+                          errors.leaseInfo?.monthlyRent
+                            ? "border-destructive"
+                            : ""
                         }
                         id="monthlyRent"
                         placeholder="1000"
-                        {...register("lease.monthlyRent")}
+                        {...register("leaseInfo.monthlyRent")}
                       />
-                      {errors.lease?.monthlyRent && (
+                      {errors.leaseInfo?.monthlyRent && (
                         <InputError
-                          message={errors.lease.monthlyRent.message}
+                          message={errors.leaseInfo.monthlyRent.message}
                         />
                       )}
                     </div>
@@ -652,17 +698,17 @@ const TenantRegistration = () => {
                       <Label htmlFor="securityDeposit">Security Deposit</Label>
                       <Input
                         className={
-                          errors.lease?.securityDeposit
+                          errors.leaseInfo?.securityDeposit
                             ? "border-destructive"
                             : ""
                         }
                         id="securityDeposit"
                         placeholder="500"
-                        {...register("lease.securityDeposit")}
+                        {...register("leaseInfo.securityDeposit")}
                       />
-                      {errors.lease?.securityDeposit && (
+                      {errors.leaseInfo?.securityDeposit && (
                         <InputError
-                          message={errors.lease.securityDeposit.message}
+                          message={errors.leaseInfo.securityDeposit.message}
                         />
                       )}
                     </div>
@@ -673,17 +719,17 @@ const TenantRegistration = () => {
                       <Label htmlFor="paymentSchedule">Payment Schedule</Label>
                       <Input
                         className={
-                          errors.lease?.paymentSchedule
+                          errors.leaseInfo?.paymentSchedule
                             ? "border-destructive"
                             : ""
                         }
                         id="paymentSchedule"
                         placeholder="Monthly"
-                        {...register("lease.paymentSchedule")}
+                        {...register("leaseInfo.paymentSchedule")}
                       />
-                      {errors.lease?.paymentSchedule && (
+                      {errors.leaseInfo?.paymentSchedule && (
                         <InputError
-                          message={errors.lease.paymentSchedule.message}
+                          message={errors.leaseInfo.paymentSchedule.message}
                         />
                       )}
                     </div>
@@ -691,17 +737,10 @@ const TenantRegistration = () => {
                     <div className="grid gap-2">
                       <Label htmlFor="documents">Lease Documents</Label>
                       <Input
-                        className={
-                          errors.lease?.documents ? "border-destructive" : ""
-                        }
                         id="documents"
                         type="file"
                         accept="application/pdf,image/*"
-                        {...register("lease.documents")}
                       />
-                      {errors.lease?.documents && (
-                        <InputError message={errors.lease.documents.message} />
-                      )}
                     </div>
                     <div className="flex flex-col gap-6 max-w-2xl mx-auto">
                       <Button type="submit" size="sm" disabled={isSubmitting}>
@@ -732,6 +771,9 @@ const TenantRegistration = () => {
             size="sm"
             type="button"
           >
+            <span>
+              <ChevronLeft />
+            </span>
             Prev
           </Button>
 
@@ -743,6 +785,9 @@ const TenantRegistration = () => {
             type="button"
           >
             Next
+            <span>
+              <ChevronRight />
+            </span>
           </Button>
         </div>
       </div>
