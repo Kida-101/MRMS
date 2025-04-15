@@ -21,7 +21,6 @@ import {
 const chartData = [
     { browser: "overdue", visitors: 200 /*get from backend*/, fill: "var(--color-overdue)"},
     { browser: "completed", visitors: 275/*get from backend*/, fill: "var(--color-completed)" }, // Green
-    { browser: "pending", visitors: 200/*get from backend*/, fill: "var(--color-pending)" }, // Yellow // Red
 ]
 
 const chartConfig = {
@@ -31,10 +30,6 @@ const chartConfig = {
       completed: {
         label: "Completed",
         color: "hsl(var(--chart-completed))", // Green
-      },
-      pending: {
-        label: "Pending",
-        color: "hsl(var(--chart-pending))", // Yellow
       },
       overdue: {
         label: "Overdue",
@@ -108,10 +103,6 @@ export default function PaymentInformation() {
         <div className="flex items-center gap-2 -mt-7">
             <span className="h-3 w-3 rounded-sm" style={{ backgroundColor: "hsl(var(--chart-completed))" }} />
             <span>Completed</span>
-            <div className="flex items-center gap-2">
-                <span className="h-3 w-3 rounded-sm" style={{ backgroundColor: "hsl(var(--chart-pending))" }} />
-                <span>Pending</span>
-            </div>
             <div className="flex items-center gap-2">
             <span className="h-3 w-3 rounded-sm" style={{ backgroundColor: "hsl(var(--chart-overdue))" }} />
             <span>Over Due</span>
