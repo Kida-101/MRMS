@@ -48,7 +48,7 @@ const Header = () => {
         <SidebarTrigger className="size-9 shadow-none" />
         <div><SearchInput /></div>
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 md:gap-4">
         {/* profile */}
       <DropdownMenu>
         <DropdownMenuTrigger>
@@ -57,7 +57,7 @@ const Header = () => {
             <AvatarFallback>CN</AvatarFallback>
             </Avatar>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-xs">
+        <DropdownMenuContent className="w-40 md:w-60">
         <DropdownMenuLabel>Ab Marshal</DropdownMenuLabel>{/* From the backend */}
         <DropdownMenuLabel className="text-xs font-light -mt-3">Abmarshal@gmial.com</DropdownMenuLabel>{/* From the backend */}
         <DropdownMenuSeparator />
@@ -72,7 +72,7 @@ const Header = () => {
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           {maintainanceReqs.map(mreq=>(
-            <DropdownMenuItem className="w-xs flex items-center mt-5">
+            <DropdownMenuItem className="w-50 md:w-xs flex items-center mt-5">
            <Link href="#" className="flex gap-3 items-center">
             <Avatar>
             <AvatarImage src={mreq.image} />{/* From the backend */}
