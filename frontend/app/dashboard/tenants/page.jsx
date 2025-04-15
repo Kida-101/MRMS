@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const page = () => {
   return (
-    <div className="h-full">
+    <div className="min-h-full">
       <Link href="/dashboard/tenants/new">
         <Button>Add Tenant</Button>
       </Link>

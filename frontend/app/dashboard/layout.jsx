@@ -17,9 +17,9 @@ const Layout = ({ children }) => {
       <AuthGuard>
         <SidebarProvider>
           <AppSidebar />
-          <main className="w-full flex flex-col gap-4 h-sceren relative">
+          <main className="w-full flex flex-col h-screen relative z-0 overflow-y-auto">
             <Header />
-            <div className="px-4 flex-1">{children}</div>
+            <div className="px-4 pt-4 flex-1">{children}</div>
           </main>
         </SidebarProvider>
       </AuthGuard>
