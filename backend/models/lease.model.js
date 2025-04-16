@@ -41,5 +41,30 @@ const LeaseSchema = new Schema(
   }
 );
 
+LeaseSchema.pre(
+  'deleteOne', 
+  { document: false, query: true }, 
+  async function(next) {
+    try {
+      // Get the lease being deleted
+      const lease = await this.model.findOne(this.getFilter());
+      if (!lease) return next();
+
+      await mongoose.model('Tenant').findByIdAndDelete(lease.tenantId);
+      await mongoose.model('Room').updateMany(
+        { _id: { $in: lease.roomId } },
+        {
+          status: 'vacant',
+          $pull: { leaseHistory: lease._id }
+        }
+      );
+
+      next();
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 const Lease = mongoose.models.Lease || mongoose.model('Lease', LeaseSchema);
 export default Lease;

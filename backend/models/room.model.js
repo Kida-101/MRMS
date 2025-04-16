@@ -28,9 +28,18 @@ const RoomSchema = new Schema(
     },
     description: String,
     floorPlan: String,
+    tenantId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Tenant',
+    },
+    leaseId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Lease',
+    },
   },
   { timestamps: true }
 );
 
 const Room = mongoose.models.Room || mongoose.model('Room', RoomSchema);
+
 export default Room;
