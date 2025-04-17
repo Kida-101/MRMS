@@ -89,7 +89,6 @@ TenantSchema.pre('deleteOne',
       await mongoose.model('Lease').findByIdAndDelete(tenant.leaseId);
 
       await mongoose.model('Room').updateMany(
-        console.log("roomId", tenant.roomId),
         { _id: { $in: tenant.roomId } }
         , {
           status: 'vacant',
