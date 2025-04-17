@@ -29,7 +29,7 @@ const LeaseSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ['active', 'expired', 'terminated', 'renewed'],
+      enum: ['active', 'expired', 'terminated'],
       default: 'active'
     },
     documents: {
@@ -42,9 +42,9 @@ const LeaseSchema = new Schema(
 );
 
 LeaseSchema.pre(
-  'deleteOne', 
-  { document: false, query: true }, 
-  async function(next) {
+  'deleteOne',
+  { document: false, query: true },
+  async function (next) {
     try {
       // Get the lease being deleted
       const lease = await this.model.findOne(this.getFilter());
@@ -65,6 +65,48 @@ LeaseSchema.pre(
     }
   }
 );
+
+LeaseSchema.pre(
+  'updateOne',
+  { document: false, query: true },
+  async function (next) {
+    try {
+      const lease = await this.model.findOne(this.getFilter());
+      if (!lease) return next();
+
+      const data = this.getUpdate();
+
+      if (
+        (lease.status === 'active' || lease.status === 'expired') &&
+        data.status === 'terminated'
+      ) {
+        data.roomId = null;
+
+        // Update Tenant
+        await mongoose.model('Tenant').findByIdAndUpdate(
+          lease.tenantId,
+          { status: 'inactive', roomId: null },
+          { new: true }
+        );
+
+        // Update Room
+        await mongoose.model('Room').findByIdAndUpdate(
+          lease.roomId,
+          { status: 'vacant', tenantId: null, leaseId: null },
+          { new: true }
+        );
+
+        await this.model.updateOne(this.getFilter(), data, { new: true });
+      }
+
+      next();
+    } catch (error) {
+      console.error('Middleware error:', error);
+      next(error);
+    }
+  }
+);
+
 
 const Lease = mongoose.models.Lease || mongoose.model('Lease', LeaseSchema);
 export default Lease;
