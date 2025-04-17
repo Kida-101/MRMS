@@ -1,6 +1,4 @@
 import Lease from '../models/lease.model.js'
-import Room from '../models/room.model.js'
-import Tenant from '../models/tenant.model.js'
 
 export const createLease = async (req, res) => {
   const data = req.body;
@@ -81,11 +79,11 @@ export const updateLease = async (req, res) => {
 };
 
 export const deleteLease = async (req, res) => {
-  const { leaseId } = req.query;
+  const { id } = req.params;
 
   try {
     // Delete lease (middleware will handle tenant and room updates)
-    const result = await Lease.deleteOne({ _id: leaseId });
+    const result = await Lease.deleteOne({ _id: id });
 
     if (result.deletedCount === 0) {
       return res.status(404).json({

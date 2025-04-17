@@ -80,33 +80,30 @@ LeaseSchema.pre(
         (lease.status === 'active' || lease.status === 'expired') &&
         data.status === 'terminated'
       ) {
+        // Mutate the update data directly — this avoids recursion
         data.roomId = null;
 
-        // Update Tenant
+        // Update related Tenant
         await mongoose.model('Tenant').findByIdAndUpdate(
           lease.tenantId,
           { status: 'inactive', roomId: null },
           { new: true }
         );
 
-        // Update Room
+        // Update related Room
         await mongoose.model('Room').findByIdAndUpdate(
           lease.roomId,
           { status: 'vacant', tenantId: null, leaseId: null },
           { new: true }
         );
-
-        await this.model.updateOne(this.getFilter(), data, { new: true });
       }
 
       next();
     } catch (error) {
-      console.error('Middleware error:', error);
       next(error);
     }
   }
 );
-
 
 const Lease = mongoose.models.Lease || mongoose.model('Lease', LeaseSchema);
 export default Lease;
