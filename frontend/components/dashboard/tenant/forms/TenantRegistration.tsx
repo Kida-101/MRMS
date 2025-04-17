@@ -20,9 +20,12 @@ import Loading from "@/components/ui/Loading";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
-import { getRooms } from "../../../../lib/api/roomsApi";
-import { useQuery } from "@tanstack/react-query";
+import { getVacantRooms } from "../../../../lib/api/roomsApi";
+import { createTenant } from "../../../../lib/api/tenantsApi";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { AxiosError } from "axios";
+import NoRooms from "@/components/dashboard/tenant/NoRooms";
 
 // Infer the type from the Zod schema (assuming tenantSchema is a Zod schema)
 type TenantFormData = z.infer<typeof tenantSchema>;
@@ -55,6 +58,7 @@ const steps = [
     title: "Step 3",
     fields: [
       "emergencyContact.name",
+      "emergencyContact.email",
       "emergencyContact.phone",
       "emergencyContact.relationship",
       "emergencyContact.address.city",
@@ -68,7 +72,6 @@ const steps = [
     fields: [
       "leaseInfo.startDate",
       "leaseInfo.endDate",
-      "leaseInfo.monthlyRent",
       "leaseInfo.securityDeposit",
       "leaseInfo.paymentSchedule",
       "leaseInfo.documents",
@@ -76,44 +79,6 @@ const steps = [
     ],
   },
 ];
-
-// const rooms = [
-//   {
-//     _id: "67fca54d155dccdd39b6249c", // roomId
-//     roomNumber: "A101",
-//     type: "retail",
-//     price: 12000,
-//     status: "available",
-//   },
-//   {
-//     _id: "a12bc34d567ef890gh12ij34", // roomId
-//     roomNumber: "B202",
-//     type: "office",
-//     price: 8000,
-//     status: "occupied",
-//   },
-//   {
-//     _id: "bc45d678ef90123ij45kl67", // roomId
-//     roomNumber: "C303",
-//     type: "retail",
-//     price: 15000,
-//     status: "available",
-//   },
-//   {
-//     _id: "d56ef789gh01234kl56mn78", // roomId
-//     roomNumber: "D404",
-//     type: "food",
-//     price: 10000,
-//     status: "available",
-//   },
-//   {
-//     _id: "ef67gh890hi12345mn67op89", // roomId
-//     roomNumber: "E505",
-//     type: "services",
-//     price: 13000,
-//     status: "occupied",
-//   },
-// ];
 
 const TenantRegistration = () => {
   const {
@@ -129,14 +94,26 @@ const TenantRegistration = () => {
 
   const [currentStep, setCurrentStep] = useState(0);
 
-  const {
-    data: rooms,
-    isLoading,
-    error,
-    isSuccess,
-  } = useQuery({
-    queryKey: ["rooms"],
-    queryFn: getRooms,
+  const queryClient = useQueryClient();
+
+  const { data: vacantRooms, isLoading: isFetchigVacantRooms } = useQuery({
+    queryKey: ["vacantRooms"],
+    queryFn: getVacantRooms,
+  });
+
+  const { isPending: isCreatingTenant, mutate } = useMutation({
+    mutationFn: createTenant,
+    onSuccess: () => {
+      toast.success("New teanant successfully created");
+      queryClient.invalidateQueries({ queryKey: ["tenats"] });
+      queryClient.invalidateQueries({ queryKey: ["vacantRooms"] });
+      reset();
+      setCurrentStep(0);
+    },
+    onError: (err: AxiosError<{ message: string }>) => {
+      const serverError = err.response?.data?.message || "Something went wrong";
+      toast.error(serverError);
+    },
   });
 
   const next = async () => {
@@ -157,24 +134,19 @@ const TenantRegistration = () => {
   };
 
   const onSubmit = async (data: TenantFormData) => {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    console.log(data);
-    toast.success(
-      `${data.personalInfo.name?.split(" ").at(0)} successfully registered`
-    );
-    setCurrentStep(0);
-    reset();
+    mutate(data);
   };
 
-  if (isSubmitting || isLoading) {
+  if (isCreatingTenant || isFetchigVacantRooms) {
     return <Loading />;
   }
 
+  if (!(vacantRooms.length >= 1)) {
+    return <NoRooms />;
+  }
+
   return (
-    <div className="flex flex-col gap-4 h-auto">
-      <div>
-        <MoveBack text="Back" />
-      </div>
+    <div className="h-auto">
       <div className="border border-dashed rounded-md h-full mb-4 relative px-4 py-6 flex flex-col gap-8 ">
         <div className="w-full max-w-3xl mx-auto px-4">
           <div className="mt-4 text-center text-sm text-muted-foreground animate-fade-in">
@@ -536,6 +508,27 @@ const TenantRegistration = () => {
                     </div>
 
                     <div className="grid gap-2">
+                      <Label htmlFor="emergencyContactEmail">
+                        Emergency contact email
+                      </Label>
+                      <Input
+                        className={
+                          errors.emergencyContact?.email
+                            ? "border-destructive"
+                            : ""
+                        }
+                        id="emergencyName"
+                        placeholder="test@gmail.com"
+                        {...register("emergencyContact.email")}
+                      />
+                      {errors.emergencyContact?.email && (
+                        <InputError
+                          message={errors.emergencyContact.email.message}
+                        />
+                      )}
+                    </div>
+
+                    <div className="grid gap-2">
                       <Label htmlFor="emergencyRelationship">
                         Relationship
                       </Label>
@@ -708,6 +701,7 @@ const TenantRegistration = () => {
                         />
                       )}
                     </div>
+
                     <div className="grid gap-2">
                       <Label htmlFor="endDate">End Date</Label>
                       <Input
@@ -726,24 +720,7 @@ const TenantRegistration = () => {
                         />
                       )}
                     </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="monthlyRent">Monthly Rent</Label>
-                      <Input
-                        className={
-                          errors.leaseInfo?.monthlyRent
-                            ? "border-destructive"
-                            : ""
-                        }
-                        id="monthlyRent"
-                        placeholder="1000"
-                        {...register("leaseInfo.monthlyRent")}
-                      />
-                      {errors.leaseInfo?.monthlyRent && (
-                        <InputError
-                          message={errors.leaseInfo.monthlyRent.message}
-                        />
-                      )}
-                    </div>
+
                     <div className="grid gap-2">
                       <Label htmlFor="securityDeposit">Security Deposit</Label>
                       <Input
@@ -801,6 +778,7 @@ const TenantRegistration = () => {
                         />
                       )}
                     </div>
+
                     <div className="grid gap-2">
                       <Label htmlFor="roomId">Room</Label>
                       <Controller
@@ -821,11 +799,14 @@ const TenantRegistration = () => {
                               <SelectValue placeholder="Select a room" />
                             </SelectTrigger>
                             <SelectContent>
-                              {rooms?.map((room) => (
-                                <SelectItem key={room._id} value={room._id}>
-                                  {room.roomNumber} -
-                                  {room.type.charAt(0).toUpperCase() +
-                                    room.type.slice(1)}
+                              {vacantRooms?.map((vacantRoom) => (
+                                <SelectItem
+                                  key={vacantRoom._id}
+                                  value={vacantRoom._id}
+                                >
+                                  {vacantRoom.roomNumber} -
+                                  {vacantRoom.type.charAt(0).toUpperCase() +
+                                    vacantRoom.type.slice(1)}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -849,7 +830,8 @@ const TenantRegistration = () => {
                       />
                     </div>
                   </div>
-                  <div className="flex flex-col gap-6 w-full mx-auto col-span-2 mt-4">
+
+                  <div className="flex flex-col gap-6 w-full mx-auto md:col-span-2 mt-4">
                     <Button type="submit" size="sm" disabled={isSubmitting}>
                       Submit
                     </Button>
