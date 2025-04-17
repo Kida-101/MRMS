@@ -5,5 +5,5 @@ export async function getRooms() {
     `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/rooms`
   );
 
-  return response;
+  return response.data.data;
 }

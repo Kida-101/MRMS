@@ -18,9 +18,11 @@ import { tenantSchema } from "@/lib/types"; // Assuming the tenant schema is typ
 import MoveBack from "@/components/ui/MoveBack";
 import Loading from "@/components/ui/Loading";
 import toast from "react-hot-toast";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
+import { getRooms } from "../../../../lib/api/roomsApi";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 
 // Infer the type from the Zod schema (assuming tenantSchema is a Zod schema)
 type TenantFormData = z.infer<typeof tenantSchema>;
@@ -64,15 +66,54 @@ const steps = [
   {
     title: "Step 4",
     fields: [
-      "lease.startDate",
-      "lease.endDate",
-      "lease.monthlyRent",
-      "lease.securityDeposit",
-      "lease.paymentSchedule",
-      "lease.documents",
+      "leaseInfo.startDate",
+      "leaseInfo.endDate",
+      "leaseInfo.monthlyRent",
+      "leaseInfo.securityDeposit",
+      "leaseInfo.paymentSchedule",
+      "leaseInfo.documents",
+      "leaseInfo.roomId",
     ],
   },
 ];
+
+// const rooms = [
+//   {
+//     _id: "67fca54d155dccdd39b6249c", // roomId
+//     roomNumber: "A101",
+//     type: "retail",
+//     price: 12000,
+//     status: "available",
+//   },
+//   {
+//     _id: "a12bc34d567ef890gh12ij34", // roomId
+//     roomNumber: "B202",
+//     type: "office",
+//     price: 8000,
+//     status: "occupied",
+//   },
+//   {
+//     _id: "bc45d678ef90123ij45kl67", // roomId
+//     roomNumber: "C303",
+//     type: "retail",
+//     price: 15000,
+//     status: "available",
+//   },
+//   {
+//     _id: "d56ef789gh01234kl56mn78", // roomId
+//     roomNumber: "D404",
+//     type: "food",
+//     price: 10000,
+//     status: "available",
+//   },
+//   {
+//     _id: "ef67gh890hi12345mn67op89", // roomId
+//     roomNumber: "E505",
+//     type: "services",
+//     price: 13000,
+//     status: "occupied",
+//   },
+// ];
 
 const TenantRegistration = () => {
   const {
@@ -87,6 +128,16 @@ const TenantRegistration = () => {
   });
 
   const [currentStep, setCurrentStep] = useState(0);
+
+  const {
+    data: rooms,
+    isLoading,
+    error,
+    isSuccess,
+  } = useQuery({
+    queryKey: ["rooms"],
+    queryFn: getRooms,
+  });
 
   const next = async () => {
     const fields = steps[currentStep].fields;
@@ -115,7 +166,7 @@ const TenantRegistration = () => {
     reset();
   };
 
-  if (isSubmitting) {
+  if (isSubmitting || isLoading) {
     return <Loading />;
   }
 
@@ -637,18 +688,18 @@ const TenantRegistration = () => {
                   Lease Information
                 </div>
 
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-6 md:grid-cols-2">
                   <div className="flex flex-col gap-6">
                     <div className="grid gap-2">
                       <Label htmlFor="startDate">Start Date</Label>
                       <Input
-                        className={
-                          errors.leaseInfo?.startDate
-                            ? "border-destructive"
-                            : ""
-                        }
                         id="startDate"
                         type="date"
+                        className={`w-full border rounded-md px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary ${
+                          errors.leaseInfo?.startDate
+                            ? "border-destructive ring-destructive"
+                            : ""
+                        }`}
                         {...register("leaseInfo.startDate")}
                       />
                       {errors.leaseInfo?.startDate && (
@@ -657,13 +708,14 @@ const TenantRegistration = () => {
                         />
                       )}
                     </div>
-
                     <div className="grid gap-2">
                       <Label htmlFor="endDate">End Date</Label>
                       <Input
-                        className={
-                          errors.leaseInfo?.endDate ? "border-destructive" : ""
-                        }
+                        className={`w-full border rounded-md px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary ${
+                          errors.leaseInfo?.endDate
+                            ? "border-destructive ring-destructive"
+                            : ""
+                        }`}
                         id="endDate"
                         type="date"
                         {...register("leaseInfo.endDate")}
@@ -674,7 +726,6 @@ const TenantRegistration = () => {
                         />
                       )}
                     </div>
-
                     <div className="grid gap-2">
                       <Label htmlFor="monthlyRent">Monthly Rent</Label>
                       <Input
@@ -693,7 +744,6 @@ const TenantRegistration = () => {
                         />
                       )}
                     </div>
-
                     <div className="grid gap-2">
                       <Label htmlFor="securityDeposit">Security Deposit</Label>
                       <Input
@@ -717,16 +767,72 @@ const TenantRegistration = () => {
                   <div className="flex flex-col gap-6">
                     <div className="grid gap-2">
                       <Label htmlFor="paymentSchedule">Payment Schedule</Label>
-                      <Input
-                        className={
-                          errors.leaseInfo?.paymentSchedule
-                            ? "border-destructive"
-                            : ""
-                        }
-                        id="paymentSchedule"
-                        placeholder="Monthly"
-                        {...register("leaseInfo.paymentSchedule")}
+                      <Controller
+                        name="leaseInfo.paymentSchedule"
+                        control={control}
+                        render={({ field }) => (
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <SelectTrigger
+                              className={`w-full ${
+                                errors.leaseInfo?.paymentSchedule
+                                  ? "border-destructive ring-destructive"
+                                  : ""
+                              }`}
+                            >
+                              <SelectValue placeholder="Select payment schedule" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="monthly">Monthly</SelectItem>
+                              <SelectItem value="quarterly">
+                                Quarterly
+                              </SelectItem>
+                              <SelectItem value="annually">Annually</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        )}
                       />
+
+                      {errors.leaseInfo?.paymentSchedule && (
+                        <InputError
+                          message={errors.leaseInfo.paymentSchedule.message}
+                        />
+                      )}
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="roomId">Room</Label>
+                      <Controller
+                        name="leaseInfo.roomId"
+                        control={control}
+                        render={({ field }) => (
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <SelectTrigger
+                              className={`w-full ${
+                                errors.leaseInfo?.roomId
+                                  ? "border-destructive ring-destructive"
+                                  : ""
+                              }`}
+                            >
+                              <SelectValue placeholder="Select a room" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {rooms?.map((room) => (
+                                <SelectItem key={room._id} value={room._id}>
+                                  {room.roomNumber} -
+                                  {room.type.charAt(0).toUpperCase() +
+                                    room.type.slice(1)}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
+                      />
+
                       {errors.leaseInfo?.paymentSchedule && (
                         <InputError
                           message={errors.leaseInfo.paymentSchedule.message}
@@ -742,11 +848,11 @@ const TenantRegistration = () => {
                         accept="application/pdf,image/*"
                       />
                     </div>
-                    <div className="flex flex-col gap-6 max-w-2xl mx-auto">
-                      <Button type="submit" size="sm" disabled={isSubmitting}>
-                        Submit
-                      </Button>
-                    </div>
+                  </div>
+                  <div className="flex flex-col gap-6 w-full mx-auto col-span-2 mt-4">
+                    <Button type="submit" size="sm" disabled={isSubmitting}>
+                      Submit
+                    </Button>
                   </div>
                 </div>
               </div>
