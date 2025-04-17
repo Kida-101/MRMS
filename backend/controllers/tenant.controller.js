@@ -7,13 +7,7 @@ import Room from '../models/room.model.js';
 export const getTenants = async (req, res) => {
   try {
     const tenants = await Tenant.find()
-      .populate({
-        path: "leaseId",
-        populate: {
-          path: "roomId",
-          model: "Room",
-        }
-      }).sort({ updatedAt: -1 });
+      .populate("leaseId").populate("roomId").sort({ updatedAt: -1 });
     if (!tenants) {
       return res.status(404).json({ success: false, message: 'No tenants found' });
     }
@@ -30,13 +24,8 @@ export const getTenant = async (req, res) => {
     return res.status(400).json({ success: false, message: 'Id is required' });
   }
   try {
-    const tenant = await Tenant.findById(id).populate({
-      path: "leaseId",
-      populate: {
-        path: "roomId",
-        model: "Room",
-      }
-    });
+    const tenant = await Tenant.findById(id).populate("leaseId").populate("roomId");
+
     if (!tenant) {
       return res.status(404).json({ success: false, message: 'Tenant not found' });
     }
@@ -66,7 +55,8 @@ export const createTenant = async (req, res) => {
       emergencyContact,
       businessInfo,
       personalInfo: { email, password, ...personalInfo },
-      leaseInfo: { roomId, leaseId, ...leaseInfo }
+      leaseInfo,
+      roomId,
     } = body;
 
     // Check Room Availability
@@ -105,7 +95,7 @@ export const createTenant = async (req, res) => {
     const leaseData = {
       ...leaseInfo,
       tenantId: tenant._id,
-      roomId
+      roomId: roomId,
     };
     const lease = await Lease.create({ ...leaseData });
 
@@ -133,16 +123,16 @@ export const createTenant = async (req, res) => {
     // Link Lease to Tenant
     const updatedTenant = await Tenant.findByIdAndUpdate(
       tenant._id,
-      { $set: { leaseId: lease._id } },
-      { $set: { roomId: updatedRoom._id } },
+      { leaseId: lease._id, roomId: updatedRoom._id },
       { new: true }
-    ).populate({
-      path: "leaseId",
-      populate: {
-        path: "roomId",
-        model: "Room",
-      }
-    });
+    ).populate("leaseId").populate("roomId");
+
+    if (!updatedTenant) {
+      await Lease.findByIdAndDelete(lease._id);
+      await Tenant.findByIdAndDelete(tenant._id);
+      await Room.findByIdAndUpdate(roomId, { status: 'vacant', tenantId: null, leaseId: null });
+      return res.status(400).json({ success: false, message: "Failed to link lease to tenant!" })
+    }
 
     return res.status(201).json({
       success: true,
@@ -167,7 +157,9 @@ export const updateTenant = async (req, res) => {
       emergencyContact,
       businessInfo,
       personalInfo,
-      leaseInfo: { leaseId, ...leaseInfo }
+      leaseInfo,
+      roomId,
+      leaseId
     } = data;
 
     if (personalInfo.password) {
@@ -175,18 +167,32 @@ export const updateTenant = async (req, res) => {
       personalInfo.password = hashedPassword;
     }
 
-    const leaseDoc = await Lease.findByIdAndUpdate(leaseId, { ...leaseInfo }, { new: true })
-    if (!leaseDoc) {
-      return res.status(400).json({ success: false, message: "Failed to update lease" })
+    const existingTenant = await Tenant.findById(id);
+    if (!existingTenant) {
+      return res.status(400).json({ success: false, message: "No tenant found" })
     }
 
-    const tenantDoc = await Tenant.findByIdAndUpdate(id, { emergencyContact, businessInfo, ...personalInfo }, { new: true }).populate({
-      path: "leaseId",
-      populate: {
-        path: "roomId",
-        model: "Room",
-      }
-    });;
+    // reassign room when the status changed from terminated to active
+    if (existingTenant.status === 'inactive' && personalInfo.status === 'active') {
+      await Room.findByIdAndUpdate(roomId, {
+        status: 'occupied',
+        tenantId: id,
+        leaseId: leaseId,
+      }, { new: true });
+
+      await Lease.findByIdAndUpdate(leaseId, {
+        roomId: roomId,
+        status: 'active',
+      }, { new: true });
+
+      await Tenant.findByIdAndUpdate(id, {
+        status: 'active',
+        roomId: roomId,
+      })
+    }
+
+
+    const tenantDoc = await Tenant.findByIdAndUpdate(id, { emergencyContact, businessInfo, ...personalInfo }, { new: true }).populate("leaseId").populate("roomId");
     if (!tenantDoc) {
       return res.status(404).json({ success: false, message: 'Tenant not updated successfully' });
     }
@@ -199,22 +205,21 @@ export const updateTenant = async (req, res) => {
 
 // DELETE TENANT
 export const deleteTenant = async (req, res) => {
-  const { leaseId } = req.query;
+  const { id } = req.params;
 
   try {
     // Delete tenant (middleware will handle tenant and room updates)
-    const result = await Lease.deleteOne({ _id: leaseId });
-
-    if (result.deletedCount === 0) {
+    const tenant = await Tenant.deleteOne({_id: id });
+    if (!tenant) {
       return res.status(404).json({
         success: false,
-        message: 'Lease not found'
+        message: 'Tenant not found'
       });
     }
 
     res.status(200).json({
       success: true,
-      message: 'Lease and tenant deleted successfully'
+      message: 'Tenant and Lease deleted successfully'
     });
 
   } catch (error) {
