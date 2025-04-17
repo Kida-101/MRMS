@@ -27,6 +27,7 @@ export const tenantSchema = z.object({
       }
     ),
     phone: z.string().min(1, "Emergency Phone is required"),
+    email: z.string().email("Invalid email address"),
     address: z.object({
       street: z.string().min(1, "Street Address is required"),
       city: z.string().min(1, "City is required"),
@@ -53,7 +54,6 @@ export const tenantSchema = z.object({
   leaseInfo: z.object({
     startDate: z.string().min(1, "Lease Start Date is required"),
     endDate: z.string().min(1, "Lease End Date is required"),
-    monthlyRent: z.string().min(1, "Monthly Rent is required"),
     securityDeposit: z.string().min(1, "Security Deposit is required"),
     paymentSchedule: z.enum(["monthly", "quarterly", "annually"], {
       required_error: "Payment Schedule is required",
