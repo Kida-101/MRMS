@@ -15,7 +15,6 @@ import InputError from "@/components/ui/InputError";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { tenantSchema } from "@/lib/types"; // Assuming the tenant schema is typed with Zod
-import MoveBack from "@/components/ui/MoveBack";
 import Loading from "@/components/ui/Loading";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
@@ -75,7 +74,7 @@ const steps = [
       "leaseInfo.securityDeposit",
       "leaseInfo.paymentSchedule",
       "leaseInfo.documents",
-      "leaseInfo.roomId",
+      "roomId",
     ],
   },
 ];
@@ -113,6 +112,7 @@ const TenantRegistration = () => {
     onError: (err: AxiosError<{ message: string }>) => {
       const serverError = err.response?.data?.message || "Something went wrong";
       toast.error(serverError);
+      console.log(err);
     },
   });
 
@@ -134,6 +134,7 @@ const TenantRegistration = () => {
   };
 
   const onSubmit = async (data: TenantFormData) => {
+    // console.log(data);
     mutate(data);
   };
 
@@ -782,7 +783,7 @@ const TenantRegistration = () => {
                     <div className="grid gap-2">
                       <Label htmlFor="roomId">Room</Label>
                       <Controller
-                        name="leaseInfo.roomId"
+                        name="roomId"
                         control={control}
                         render={({ field }) => (
                           <Select
@@ -791,7 +792,7 @@ const TenantRegistration = () => {
                           >
                             <SelectTrigger
                               className={`w-full ${
-                                errors.leaseInfo?.roomId
+                                errors.roomId
                                   ? "border-destructive ring-destructive"
                                   : ""
                               }`}
@@ -814,10 +815,8 @@ const TenantRegistration = () => {
                         )}
                       />
 
-                      {errors.leaseInfo?.paymentSchedule && (
-                        <InputError
-                          message={errors.leaseInfo.paymentSchedule.message}
-                        />
+                      {errors.roomId && (
+                        <InputError message={errors.roomId.message} />
                       )}
                     </div>
 
