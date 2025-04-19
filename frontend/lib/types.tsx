@@ -60,8 +60,8 @@ export const tenantSchema = z.object({
       invalid_type_error: "Invalid payment schedule type",
     }),
     // documents: z.string().optional(),
-    roomId: z.string().min(1, "Room selection is required"),
   }),
+  roomId: z.string().min(1, "Room selection is required"),
 });
 
 export const tenantSchemaDemo = z.object({
