@@ -16,7 +16,23 @@ export const getAdmins = async (req, res) => {
 
 // GET SINGLE ADMIN
 export const getAdmin = async (req, res) => {
-  const id = req.query.id || req.body.id;
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ success: false, message: "Admin ID is required" });
+  }
+  try {
+    const admin = await Admin.findById(id);
+    res.status(200).json({ success: true, message: 'Admin successfully retrieved', data: admin });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+}
+
+
+// GET SIGNED ADMIN
+export const getLoggedInAdmin = async (req, res) => {
+  const id = req.body.id;
 
   if (!id) {
     return res.status(400).json({ success: false, message: "Admin ID is required" });
@@ -55,30 +71,104 @@ export const createAdmin = async (req, res) => {
 
 // UPDATE ADMIN
 export const updateAdmin = async (req, res) => {
-  const { id } = req.query;
+  const { id } = req.params;
   const data = req.body;
 
   if (!id) {
-    return res.status(400).json({ success: false, message: "Admin ID not provided" })
+    return res.status(400).json({ success: false, message: "Admin ID not provided" });
   }
+
   try {
+    // Prevent password updates through this endpoint
     if (data.password) {
-      const hashedPassword = await bcrypt.hash(data.password, 10);
-      data.password = hashedPassword;
+      return res.status(400).json({
+        success: false,
+        message: "Use the dedicated password update endpoint for password changes",
+      });
     }
-    const admin = await Admin.findByIdAndUpdate(id, data, { new: true })
+
+    const admin = await Admin.findByIdAndUpdate(id, data, { new: true });
     if (!admin) {
-      return res.status(400).json({ success: false, message: "Admin not found" })
+      return res.status(404).json({ success: false, message: "Admin not found" });
     }
-    res.status(200).json({ success: true, message: "Admin updated successfully", data: admin })
+
+    res.status(200).json({
+      success: true,
+      message: "Admin updated successfully",
+      data: admin,
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Internal server error', error: error.message })
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
   }
-}
+};
+
+// UPDATE ADMIN PASSWORD
+export const updateAdminPassword = async (req, res) => {
+  const { id } = req.params;
+  const { oldPassword, newPassword } = req.body;
+
+  if (!id) {
+    return res.status(400).json({ success: false, message: "Admin ID not provided" });
+  }
+
+  if (!oldPassword || !newPassword) {
+    return res.status(400).json({
+      success: false,
+      message: "Old password and new password are required",
+    });
+  }
+
+  try {
+    // Find admin
+    const admin = await Admin.findById(id);
+    if (!admin) {
+      return res.status(404).json({ success: false, message: "Admin not found" });
+    }
+
+    // Verify old password
+    const isMatch = await bcrypt.compare(oldPassword, admin.password);
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Old password is incorrect",
+      });
+    }
+
+    // Validate new password (minLength: 6, per schema)
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "New password must be at least 6 characters",
+      });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    admin.password = hashedPassword;
+
+    // Save updated admin
+    await admin.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Password updated successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
 
 // DELETE ADMIN
 export const deleteAdmin = async (req, res) => {
-  const { id } = req.query;
+  const { id } = req.params;
   if (!id) {
     return res.status(400).json({ success: false, message: "Admin ID not provided" })
   }

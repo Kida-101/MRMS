@@ -7,6 +7,6 @@ tenantRouter.get('/tenants', getTenants);
 tenantRouter.get('/tenants/:id', getTenant);
 tenantRouter.post('/tenants', createTenant);
 tenantRouter.put('/tenants/:id', updateTenant);
-tenantRouter.delete('/tenants/delete', deleteTenant);
+tenantRouter.delete('/tenants/:id', deleteTenant);
 
 export default tenantRouter;

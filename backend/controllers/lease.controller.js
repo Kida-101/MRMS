@@ -42,45 +42,65 @@ export const getLease = async (req, res) => {
 };
 
 export const updateLease = async (req, res) => {
-  const { id } = req.params
+  const { id } = req.params;
   const data = req.body;
+
   if (!id || !data) {
-    return res.status(400).json({ success: false, message: "Lease id and data is required" })
+    return res.status(400).json({
+      success: false,
+      message: "Lease id and data is required"
+    });
   }
+
   try {
-    const lease = await Lease.findByIdAndUpdate(id, data, { new: true });
-    if (!lease) {
-      return res.status(404).json({ success: false, message: "Lease not found" })
+    const existingLease = await Lease.findById(id);
+    if (!existingLease) {
+      return res.status(404).json({
+        success: false,
+        message: "Lease not found"
+      });
     }
-    res.status(200).json({ success: true, message: "Lease updated successfully", data: lease })
+
+    // Only one update to trigger middleware
+    await Lease.updateOne({ _id: id }, data);
+    const updatedLease = await Lease.findById(id);
+
+    res.status(200).json({
+      success: true,
+      message: "Lease updated successfully",
+      data: updatedLease
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
 
 export const deleteLease = async (req, res) => {
-  const { leaseId } = req.query;
+  const { id } = req.params;
 
   try {
     // Delete lease (middleware will handle tenant and room updates)
-    const result = await Lease.deleteOne({ _id: leaseId });
+    const result = await Lease.deleteOne({ _id: id });
 
     if (result.deletedCount === 0) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Lease not found' 
+      return res.status(404).json({
+        success: false,
+        message: 'Lease not found'
       });
     }
 
-    res.status(200).json({ 
-      success: true, 
-      message: 'Lease and tenant deleted successfully' 
+    res.status(200).json({
+      success: true,
+      message: 'Lease and tenant deleted successfully'
     });
 
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: error.message 
+    res.status(500).json({
+      success: false,
+      message: error.message
     });
   }
 }

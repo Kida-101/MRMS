@@ -15,12 +15,16 @@ import InputError from "@/components/ui/InputError";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { tenantSchema } from "@/lib/types"; // Assuming the tenant schema is typed with Zod
-import MoveBack from "@/components/ui/MoveBack";
 import Loading from "@/components/ui/Loading";
 import toast from "react-hot-toast";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
+import { getVacantRooms } from "../../../../lib/api/roomsApi";
+import { createTenant } from "../../../../lib/api/tenantsApi";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { AxiosError } from "axios";
+import NoRooms from "@/components/dashboard/tenant/NoRooms";
 
 // Infer the type from the Zod schema (assuming tenantSchema is a Zod schema)
 type TenantFormData = z.infer<typeof tenantSchema>;
@@ -53,6 +57,7 @@ const steps = [
     title: "Step 3",
     fields: [
       "emergencyContact.name",
+      "emergencyContact.email",
       "emergencyContact.phone",
       "emergencyContact.relationship",
       "emergencyContact.address.city",
@@ -64,12 +69,12 @@ const steps = [
   {
     title: "Step 4",
     fields: [
-      "lease.startDate",
-      "lease.endDate",
-      "lease.monthlyRent",
-      "lease.securityDeposit",
-      "lease.paymentSchedule",
-      "lease.documents",
+      "leaseInfo.startDate",
+      "leaseInfo.endDate",
+      "leaseInfo.securityDeposit",
+      "leaseInfo.paymentSchedule",
+      "leaseInfo.documents",
+      "roomId",
     ],
   },
 ];
@@ -87,6 +92,29 @@ const TenantRegistration = () => {
   });
 
   const [currentStep, setCurrentStep] = useState(0);
+
+  const queryClient = useQueryClient();
+
+  const { data: vacantRooms, isLoading: isFetchigVacantRooms } = useQuery({
+    queryKey: ["vacantRooms"],
+    queryFn: getVacantRooms,
+  });
+
+  const { isPending: isCreatingTenant, mutate } = useMutation({
+    mutationFn: createTenant,
+    onSuccess: () => {
+      toast.success("New teanant successfully created");
+      queryClient.invalidateQueries({ queryKey: ["tenats"] });
+      queryClient.invalidateQueries({ queryKey: ["vacantRooms"] });
+      reset();
+      setCurrentStep(0);
+    },
+    onError: (err: AxiosError<{ message: string }>) => {
+      const serverError = err.response?.data?.message || "Something went wrong";
+      toast.error(serverError);
+      console.log(err);
+    },
+  });
 
   const next = async () => {
     const fields = steps[currentStep].fields;
@@ -106,24 +134,20 @@ const TenantRegistration = () => {
   };
 
   const onSubmit = async (data: TenantFormData) => {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    console.log(data);
-    toast.success(
-      `${data.personalInfo.name?.split(" ").at(0)} successfully registered`
-    );
-    setCurrentStep(0);
-    reset();
+    // console.log(data);
+    mutate(data);
   };
 
-  if (isSubmitting) {
+  if (isCreatingTenant || isFetchigVacantRooms) {
     return <Loading />;
   }
 
+  if (!(vacantRooms.length >= 1)) {
+    return <NoRooms />;
+  }
+
   return (
-    <div className="flex flex-col gap-4 h-auto">
-      <div>
-        <MoveBack text="Back" />
-      </div>
+    <div className="h-auto">
       <div className="border border-dashed rounded-md h-full mb-4 relative px-4 py-6 flex flex-col gap-8 ">
         <div className="w-full max-w-3xl mx-auto px-4">
           <div className="mt-4 text-center text-sm text-muted-foreground animate-fade-in">
@@ -485,6 +509,27 @@ const TenantRegistration = () => {
                     </div>
 
                     <div className="grid gap-2">
+                      <Label htmlFor="emergencyContactEmail">
+                        Emergency contact email
+                      </Label>
+                      <Input
+                        className={
+                          errors.emergencyContact?.email
+                            ? "border-destructive"
+                            : ""
+                        }
+                        id="emergencyName"
+                        placeholder="test@gmail.com"
+                        {...register("emergencyContact.email")}
+                      />
+                      {errors.emergencyContact?.email && (
+                        <InputError
+                          message={errors.emergencyContact.email.message}
+                        />
+                      )}
+                    </div>
+
+                    <div className="grid gap-2">
                       <Label htmlFor="emergencyRelationship">
                         Relationship
                       </Label>
@@ -637,18 +682,18 @@ const TenantRegistration = () => {
                   Lease Information
                 </div>
 
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-6 md:grid-cols-2">
                   <div className="flex flex-col gap-6">
                     <div className="grid gap-2">
                       <Label htmlFor="startDate">Start Date</Label>
                       <Input
-                        className={
-                          errors.leaseInfo?.startDate
-                            ? "border-destructive"
-                            : ""
-                        }
                         id="startDate"
                         type="date"
+                        className={`w-full border rounded-md px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary ${
+                          errors.leaseInfo?.startDate
+                            ? "border-destructive ring-destructive"
+                            : ""
+                        }`}
                         {...register("leaseInfo.startDate")}
                       />
                       {errors.leaseInfo?.startDate && (
@@ -661,9 +706,11 @@ const TenantRegistration = () => {
                     <div className="grid gap-2">
                       <Label htmlFor="endDate">End Date</Label>
                       <Input
-                        className={
-                          errors.leaseInfo?.endDate ? "border-destructive" : ""
-                        }
+                        className={`w-full border rounded-md px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary ${
+                          errors.leaseInfo?.endDate
+                            ? "border-destructive ring-destructive"
+                            : ""
+                        }`}
                         id="endDate"
                         type="date"
                         {...register("leaseInfo.endDate")}
@@ -671,25 +718,6 @@ const TenantRegistration = () => {
                       {errors.leaseInfo?.endDate && (
                         <InputError
                           message={errors.leaseInfo.endDate.message}
-                        />
-                      )}
-                    </div>
-
-                    <div className="grid gap-2">
-                      <Label htmlFor="monthlyRent">Monthly Rent</Label>
-                      <Input
-                        className={
-                          errors.leaseInfo?.monthlyRent
-                            ? "border-destructive"
-                            : ""
-                        }
-                        id="monthlyRent"
-                        placeholder="1000"
-                        {...register("leaseInfo.monthlyRent")}
-                      />
-                      {errors.leaseInfo?.monthlyRent && (
-                        <InputError
-                          message={errors.leaseInfo.monthlyRent.message}
                         />
                       )}
                     </div>
@@ -717,20 +745,78 @@ const TenantRegistration = () => {
                   <div className="flex flex-col gap-6">
                     <div className="grid gap-2">
                       <Label htmlFor="paymentSchedule">Payment Schedule</Label>
-                      <Input
-                        className={
-                          errors.leaseInfo?.paymentSchedule
-                            ? "border-destructive"
-                            : ""
-                        }
-                        id="paymentSchedule"
-                        placeholder="Monthly"
-                        {...register("leaseInfo.paymentSchedule")}
+                      <Controller
+                        name="leaseInfo.paymentSchedule"
+                        control={control}
+                        render={({ field }) => (
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <SelectTrigger
+                              className={`w-full ${
+                                errors.leaseInfo?.paymentSchedule
+                                  ? "border-destructive ring-destructive"
+                                  : ""
+                              }`}
+                            >
+                              <SelectValue placeholder="Select payment schedule" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="monthly">Monthly</SelectItem>
+                              <SelectItem value="quarterly">
+                                Quarterly
+                              </SelectItem>
+                              <SelectItem value="annually">Annually</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        )}
                       />
+
                       {errors.leaseInfo?.paymentSchedule && (
                         <InputError
                           message={errors.leaseInfo.paymentSchedule.message}
                         />
+                      )}
+                    </div>
+
+                    <div className="grid gap-2">
+                      <Label htmlFor="roomId">Room</Label>
+                      <Controller
+                        name="roomId"
+                        control={control}
+                        render={({ field }) => (
+                          <Select
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          >
+                            <SelectTrigger
+                              className={`w-full ${
+                                errors.roomId
+                                  ? "border-destructive ring-destructive"
+                                  : ""
+                              }`}
+                            >
+                              <SelectValue placeholder="Select a room" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {vacantRooms?.map((vacantRoom) => (
+                                <SelectItem
+                                  key={vacantRoom._id}
+                                  value={vacantRoom._id}
+                                >
+                                  {vacantRoom.roomNumber} -
+                                  {vacantRoom.type.charAt(0).toUpperCase() +
+                                    vacantRoom.type.slice(1)}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        )}
+                      />
+
+                      {errors.roomId && (
+                        <InputError message={errors.roomId.message} />
                       )}
                     </div>
 
@@ -742,11 +828,12 @@ const TenantRegistration = () => {
                         accept="application/pdf,image/*"
                       />
                     </div>
-                    <div className="flex flex-col gap-6 max-w-2xl mx-auto">
-                      <Button type="submit" size="sm" disabled={isSubmitting}>
-                        Submit
-                      </Button>
-                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-6 w-full mx-auto md:col-span-2 mt-4">
+                    <Button type="submit" size="sm" disabled={isSubmitting}>
+                      Submit
+                    </Button>
                   </div>
                 </div>
               </div>

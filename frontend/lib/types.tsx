@@ -27,6 +27,7 @@ export const tenantSchema = z.object({
       }
     ),
     phone: z.string().min(1, "Emergency Phone is required"),
+    email: z.string().email("Invalid email address"),
     address: z.object({
       street: z.string().min(1, "Street Address is required"),
       city: z.string().min(1, "City is required"),
@@ -53,7 +54,6 @@ export const tenantSchema = z.object({
   leaseInfo: z.object({
     startDate: z.string().min(1, "Lease Start Date is required"),
     endDate: z.string().min(1, "Lease End Date is required"),
-    monthlyRent: z.string().min(1, "Monthly Rent is required"),
     securityDeposit: z.string().min(1, "Security Deposit is required"),
     paymentSchedule: z.enum(["monthly", "quarterly", "annually"], {
       required_error: "Payment Schedule is required",
@@ -61,31 +61,27 @@ export const tenantSchema = z.object({
     }),
     // documents: z.string().optional(),
   }),
+  roomId: z.string().min(1, "Room selection is required"),
 });
 
 export const tenantSchemaDemo = z.object({
-  // Personal Info
-  name: z.string().default("John Doe"),
-  email: z.string().default("test@example.com"),
-  phone: z.string().default("000-000-0000"),
-  password: z.string().default("password123"),
-
-  // Address Info
-  address: z.object({
-    street: z.string().default("123 Main St"),
-    city: z.string().default("Unknown City"),
-    country: z.string().default("Unknown Country"),
-    postalCode: z.string().default("00000"),
+  personalInfo: z.object({
+    name: z.string().default("John Doe"),
+    email: z.string().default("test@example.com"),
+    phone: z.string().default("000-000-0000"),
+    password: z.string().default("password123"),
+    address: z.object({
+      street: z.string().default("123 Main St"),
+      city: z.string().default("Unknown City"),
+      country: z.string().default("Unknown Country"),
+      postalCode: z.string().default("00000"),
+    }),
   }),
 
-  // Emergency Contact Info
   emergencyContact: z.object({
     name: z.string().default("Emergency Contact"),
     relationship: z
-      .enum(["parent", "spouse", "sibling", "friend", "colleague", "other"], {
-        required_error: "Relationship is required",
-        invalid_type_error: "Invalid relationship type",
-      })
+      .enum(["parent", "spouse", "sibling", "friend", "colleague", "other"])
       .default("parent"),
     phone: z.string().default("000-000-0000"),
     address: z.object({
@@ -96,31 +92,22 @@ export const tenantSchemaDemo = z.object({
     }),
   }),
 
-  // Business & Lease Info
   businessInfo: z.object({
     businessName: z.string().default("ABC Corp"),
     businessType: z
-      .enum(["retail", "food", "services", "office", "commercial", "other"], {
-        required_error: "Business type is required",
-        invalid_type_error: "Invalid business type",
-      })
+      .enum(["retail", "food", "services", "office", "commercial", "other"])
       .default("retail"),
     businessPhone: z.string().default("000-000-0000"),
     businessEmail: z.string().default("business@example.com"),
   }),
 
-  // Lease Info
-  lease: z.object({
+  leaseInfo: z.object({
     startDate: z.string().default("2023-01-01"),
     endDate: z.string().default("2024-01-01"),
-    monthlyRent: z.string().default("1000"), // Default to $1000
-    securityDeposit: z.string().default("2000"), // Default to $2000
+    monthlyRent: z.string().default("1000"),
+    securityDeposit: z.string().default("2000"),
     paymentSchedule: z
-      .enum(["monthly", "quarterly", "annually"], {
-        required_error: "Payment Schedule is required",
-        invalid_type_error: "Invalid payment schedule type",
-      })
-      .default("monthly"), // Default to "monthly"
-    // documents: z.string().default("lease-agreement.pdf"),
+      .enum(["monthly", "quarterly", "annually"])
+      .default("monthly"),
   }),
 });
