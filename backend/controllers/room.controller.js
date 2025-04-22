@@ -29,7 +29,7 @@ export const createRoom = async (req, res) => {
 
 export const getRooms = async (req, res) => {
   try {
-    const rooms = await Room.find();
+    const rooms = await Room.find().populate("leaseId").populate("tenantId").sort({createdAt: -1});
     if (!rooms) {
       return res
         .status(404)
@@ -60,7 +60,7 @@ export const getVacantRooms = async (req, res) => {
 export const getRoom = async (req, res) => {
   const { id } = req.params;
   try {
-    const room = await Room.findById(id);
+    const room = await Room.findById(id).populate("leaseId").populate("tenantId");
     if (!room) {
       return res
         .status(404)
