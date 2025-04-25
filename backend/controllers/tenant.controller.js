@@ -97,7 +97,8 @@ export const createTenant = async (req, res) => {
       tenantId: tenant._id,
       roomId: roomId,
     };
-    const lease = await Lease.create({ ...leaseData });
+
+    const lease = await Lease.create(leaseData);
 
     if (!lease) {
       await Tenant.findByIdAndDelete(tenant._id);
@@ -162,6 +163,8 @@ export const updateTenant = async (req, res) => {
       leaseId
     } = data;
 
+    console.log(roomId, "roomId");
+
     if (personalInfo.password) {
       const hashedPassword = await bcrypt.hash(personalInfo.password, 10);
       personalInfo.password = hashedPassword;
@@ -191,8 +194,34 @@ export const updateTenant = async (req, res) => {
       })
     }
 
+    console.log("lease info", leaseInfo);
 
-    const tenantDoc = await Tenant.findByIdAndUpdate(id, { emergencyContact, businessInfo, ...personalInfo }, { new: true }).populate("leaseId").populate("roomId");
+    const leaseDoc = await Lease.findByIdAndUpdate(leaseId, { ...leaseInfo }, { new: true });
+    if (!leaseDoc) {
+      return res.status(404).json({ success: false, message: 'Lease not updated successfully' });
+    }
+
+    // if the room is changed, update the room status
+    if (roomId !== existingTenant.roomId) {
+      const updatedRoom = await Room.findByIdAndUpdate(roomId, {
+        status: 'occupied',
+        tenantId: id,
+        leaseId: leaseId,
+      })
+      if (!updatedRoom) {
+        return res.status(404).json({ success: false, message: 'Room not updated successfully' });
+      }
+
+      // Update the previous room status to vacant
+      await Room.findByIdAndUpdate(existingTenant.roomId, {
+        status: 'vacant',
+        tenantId: null,
+        leaseId: null,
+      }
+      )
+    }
+
+    const tenantDoc = await Tenant.findByIdAndUpdate(id, { emergencyContact, businessInfo, ...personalInfo, roomId }, { new: true }).populate("leaseId").populate("roomId");
     if (!tenantDoc) {
       return res.status(404).json({ success: false, message: 'Tenant not updated successfully' });
     }
@@ -209,7 +238,7 @@ export const deleteTenant = async (req, res) => {
 
   try {
     // Delete tenant (middleware will handle tenant and room updates)
-    const tenant = await Tenant.deleteOne({_id: id });
+    const tenant = await Tenant.deleteOne({ _id: id });
     if (!tenant) {
       return res.status(404).json({
         success: false,
