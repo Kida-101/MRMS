@@ -104,7 +104,7 @@ const TenantRegistration = () => {
     mutationFn: createTenant,
     onSuccess: () => {
       toast.success("New teanant successfully created");
-      queryClient.invalidateQueries({ queryKey: ["tenats"] });
+      queryClient.invalidateQueries({ queryKey: ["tenants"] });
       queryClient.invalidateQueries({ queryKey: ["vacantRooms"] });
       reset();
       setCurrentStep(0);
