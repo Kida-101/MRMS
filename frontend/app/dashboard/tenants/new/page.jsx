@@ -13,7 +13,7 @@ const page = () => {
   return (
     <div className="h-full flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <div className="font-bold text-2xl mt-2">Tenants</div>
+        <div className="font-bold text-2xl mt-2">Tenant Registration</div>
         <div>
           <Breadcrumb>
             <BreadcrumbList>
