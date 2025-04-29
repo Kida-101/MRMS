@@ -113,6 +113,7 @@ const TenantRegistration = () => {
       const serverError = err.response?.data?.message || "Something went wrong";
       toast.error(serverError);
       console.log(err);
+      console.log(serverError);
     },
   });
 
