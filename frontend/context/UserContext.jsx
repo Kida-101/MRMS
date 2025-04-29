@@ -31,7 +31,7 @@ const UserProvider = ({ children }) => {
 
   const getUserData = async () => {
     try {
-      const { data } = await axios.get(`${backendUrl}/api/admin`, {
+      const { data } = await axios.get(`${backendUrl}/api/admins`, {
         withCredentials: true,
       });
       data.success ? setUser(data.data) : toast.error(data.message);
