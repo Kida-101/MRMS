@@ -104,7 +104,7 @@ const TenantRegistration = () => {
     mutationFn: createTenant,
     onSuccess: () => {
       toast.success("New teanant successfully created");
-      queryClient.invalidateQueries({ queryKey: ["tenats"] });
+      queryClient.invalidateQueries({ queryKey: ["tenants"] });
       queryClient.invalidateQueries({ queryKey: ["vacantRooms"] });
       reset();
       setCurrentStep(0);
@@ -147,8 +147,8 @@ const TenantRegistration = () => {
   }
 
   return (
-    <div className="h-auto">
-      <div className="border border-dashed rounded-md h-full mb-4 relative px-4 py-6 flex flex-col gap-8 ">
+    <div className="flex-1 pb-4">
+      <div className="border border-dashed rounded-md h-full relative px-4 py-6 flex flex-col gap-8 ">
         <div className="w-full max-w-3xl mx-auto px-4">
           <div className="mt-4 text-center text-sm text-muted-foreground animate-fade-in">
             Step {currentStep + 1} of {steps.length}
