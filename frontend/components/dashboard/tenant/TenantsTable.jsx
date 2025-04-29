@@ -111,7 +111,7 @@ const TenantsTable = ({ tenants }) => {
               </TableCell>
 
               {/* BUSINESS INFO */}
-              <TableCell className="px-6 py-4 text-left">
+              <TableCell className="p-4 text-left">
                 <div className="space-y-1">
                   <span className="block text-sm text-gray-700 dark:text-gray-200">
                     {tenant.businessInfo?.businessName || "N/A"}

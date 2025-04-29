@@ -15,3 +15,10 @@ export async function createTenant(tenantData) {
   );
   return response.data;
 }
+
+export async function getTenant(tenantId) {
+  const response = await axios.get(
+    `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tenants/${tenantId}`
+  );
+  return response.data.data;
+}
