@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,8 +9,13 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import MoveBack from "@/components/ui/MoveBack";
+import { useRouter } from "next/router";
 
 const page = () => {
+  // const router = useRouter();
+
+  // console.log(router);
+
   return (
     <div className="flex flex-col h-full gap-6">
       <div className="flex items-center justify-between">
@@ -36,7 +43,12 @@ const page = () => {
         </div>
       </div>
       <div className="flex-1">
-        <div className="border border-dashed rounded-md h-full relative p-4 flex flex-col gap-4"></div>
+        <div className="border border-dashed rounded-md h-full relative p-4 flex flex-col gap-4">
+          <div>Personal Info</div>
+          <div>Business Info</div>
+          <div>Emergency Contact Info</div>
+          <div>Lease Info</div>
+        </div>
       </div>
     </div>
   );
