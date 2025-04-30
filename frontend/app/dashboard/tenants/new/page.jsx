@@ -8,6 +8,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import Link from "next/link";
 
 const page = () => {
   return (
@@ -18,12 +19,14 @@ const page = () => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/dashboard">Home</BreadcrumbLink>
+                <BreadcrumbLink asChild>
+                  <Link href="/dashboard">Home</Link>
+                </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href="/dashboard/tenants">
-                  Tenants
+                <BreadcrumbLink asChild>
+                  <Link href="/dashboard/tenants">Tenants</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />

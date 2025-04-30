@@ -1,5 +1,7 @@
 "use client";
 
+import MoveBack from "@/components/ui/MoveBack";
+import Link from "next/link";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,7 +10,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import MoveBack from "@/components/ui/MoveBack";
 import { useRouter } from "next/router";
 
 const page = () => {
@@ -26,12 +27,14 @@ const page = () => {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/dashboard">Home</BreadcrumbLink>
+                <BreadcrumbLink asChild>
+                  <Link href="/dashboard">Home</Link>
+                </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
-                <BreadcrumbLink href="/dashboard/tenants">
-                  Tenants
+                <BreadcrumbLink asChild>
+                  <Link href="/dashboard/tenants">Tenants</Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
