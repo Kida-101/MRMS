@@ -1,11 +1,6 @@
-"use client";
-
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import UserProvider from "../context/UserContext";
-import { Toaster } from "react-hot-toast";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import Providers from "./providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,28 +12,14 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 0,
-    },
-  },
-});
-
 export default function RootLayout({ children }) {
   return (
-    <UserProvider>
-      <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools initialIsOpen={false} />
-        <Toaster position="top-right" />
-        <html lang="en">
-          <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-          >
-            {children}
-          </body>
-        </html>
-      </QueryClientProvider>
-    </UserProvider>
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <Providers>{children}</Providers>
+      </body>
+    </html>
   );
 }
