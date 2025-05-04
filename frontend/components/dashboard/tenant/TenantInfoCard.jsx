@@ -50,7 +50,7 @@ const TenantInfoCard = ({ tenant }) => {
   return (
     <>
       {/*Tenant Info */}
-      <div className="border border-dashed rounded-2xl p-6 flex flex-col gap-8 lg:row-span-3 shadow-sm bg-sidebar-accent">
+      <div className="border border-dashed rounded-2xl p-6 flex flex-col gap-8 lg:row-span-3 shadow-sm">
         <div className="flex justify-between items-center">
           <div className="text-base font-semibold">Tenant Info</div>
           <div className="flex items-center gap-1 cursor-pointer">

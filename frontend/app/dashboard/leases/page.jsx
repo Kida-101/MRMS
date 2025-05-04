@@ -44,7 +44,7 @@ const page = () => {
         </div>
       </div>
       <div className="flex-1">
-        <div className="border border-dashed rounded-md h-full relative p-4 flex flex-col gap-4">
+        <div className="border border-dashed rounded-2xl h-full relative p-4 flex flex-col gap-4">
           {isLoadingTenants ? (
             <Loading />
           ) : (
