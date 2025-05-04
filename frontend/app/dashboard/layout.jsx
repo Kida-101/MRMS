@@ -19,7 +19,7 @@ const Layout = ({ children }) => {
           <AppSidebar />
           <main className="w-full flex flex-col h-screen relative z-0 overflow-y-auto">
             <Header />
-            <div className="px-4 pt-4 flex-1">{children}</div>
+            <div className="p-4 flex-1">{children}</div>
           </main>
         </SidebarProvider>
       </AuthGuard>
