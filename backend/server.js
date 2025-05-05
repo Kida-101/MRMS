@@ -3,6 +3,7 @@ import 'dotenv/config';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import connectDB from './config/mongodb.js';
+import dotenv from 'dotenv';
 
 // Routes
 import authRouter from './routes/auth.route.js';
@@ -47,3 +48,4 @@ app.use((err, req, res, next) => {
 app.listen(port, () => {
   console.log(`Server is running on ${port}`);
 });
+dotenv.config();
