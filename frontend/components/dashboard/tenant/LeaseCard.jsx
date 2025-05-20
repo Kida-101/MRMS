@@ -1,4 +1,7 @@
+"use client";
+
 import CustomCardItem from "@/components/ui/CustomCardItem";
+import LeaseDetail from "@/components/dashboard/lease/LeaseDetail";
 import {
   ArrowUpRight,
   BadgeCheck,
@@ -6,6 +9,7 @@ import {
   Repeat,
   Wallet,
 } from "lucide-react";
+import { useState } from "react";
 
 const statusStyles = {
   active: {
@@ -40,14 +44,28 @@ const LeaseCard = ({ lease }) => {
   const startDate = formatDate(lease?.startDate) || "N/A";
   const endDate = formatDate(lease?.endDate) || "N/A";
 
+  const [openSheet, setOpenSheet] = useState(false);
+
+  const handleOpenSheet = () => {
+    setOpenSheet(true);
+  };
+
   return (
     <>
+      <LeaseDetail
+        openSheet={openSheet}
+        lease={lease}
+        setOpenSheet={setOpenSheet}
+      />
+
       {/*Lease Info */}
       <div className="border border-dashed rounded-2xl p-4 flex flex-col gap-5 shadow-sm">
         <div className="flex justify-between items-center">
           <div className="text-base font-semibold">Lease Info</div>
           <div className="flex items-center gap-1 cursor-pointer">
-            <div className="text-sm hover:underline">Detail</div>
+            <div className="text-sm hover:underline" onClick={handleOpenSheet}>
+              Detail
+            </div>
             <ArrowUpRight size={16} />
           </div>
         </div>
